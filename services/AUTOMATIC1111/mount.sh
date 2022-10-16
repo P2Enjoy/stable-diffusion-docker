@@ -21,9 +21,10 @@ MOUNTS["${ROOT}/models/SwinIR"]="/data/SwinIR"
 MOUNTS["${ROOT}/models/ScuNET"]="/data/ScuNET"
 MOUNTS["${ROOT}/models/LDSR"]="/data/LDSR"
 MOUNTS["${ROOT}/models/hypernetworks"]="/data/Hypernetworks"
-
+MOUNTS["${ROOT}/models/deepbooru"]="/data/deepbooru"
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
 MOUNTS["${ROOT}/config.json"]="/data/config/auto/config.json"
+
 
 # extra hacks
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="/data/.cache"

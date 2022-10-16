@@ -13,7 +13,7 @@ EOF
 
 echo "Downloading, this might take a while..."
 
-aria2c --input-file /docker/links.txt --dir /data --continue
+aria2c --input-file /docker/links.txt --dir /data --continue --disable-ipv6
 
 echo "Checking SHAs..."
 
