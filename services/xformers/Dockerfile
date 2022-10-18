@@ -4,7 +4,7 @@
 FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
 
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
-ARG TENSORFLOW="intel-tensorflow==2.9.1"
+ARG TENSORFLOW="intel-tensorflow==2.10.0"
 ARG TORCH_CUDA_ARCH_LIST="7.5+PTX"
 ARG XFORMER_SHA="3633e1afc7bffbe61957f04e7bb1a742ee910ace"
 

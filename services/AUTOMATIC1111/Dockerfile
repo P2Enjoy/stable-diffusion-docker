@@ -28,12 +28,38 @@ EOF
 RUN git clone https://github.com/crowsonkb/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
 
 ############################################################################################################################################################################################
+FROM alpine/git:2.36.2 as custom_scripts
+
+ARG a1111_sd_webui_tagcomplete="353cb1937e82750d1859d6fd8c24e532c7d19e59"
+ARG deforum_for_automatic1111_webui="ac8fed9ed705b43975dd14f69de3e253e69750dc"
+ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"
+ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"
+ARG stable_diffusion_webui_cv2_external_masking_script="a6ae5ce5c1aabd51d4162850047a41914a38a593"
+ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"
+ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"
+ARG embedding_to_png_script="a764f1b4e8c21d84ad36e72a9924078714d59b93"
+
+SHELL ["/bin/sh", "-ceuxo", "pipefail"]
+
+WORKDIR /git
+
+RUN git clone https://github.com/DominikDoom/a1111-sd-webui-tagcomplete.git repositories/a1111-sd-webui-tagcomplete && cd repositories/a1111-sd-webui-tagcomplete && git reset --hard ${a1111_sd_webui_tagcomplete}
+RUN git clone https://github.com/deforum-art/deforum-for-automatic1111-webui.git repositories/deforum-for-automatic1111-webui && cd repositories/deforum-for-automatic1111-webui && git reset --hard ${deforum_for_automatic1111_webui}
+RUN git clone https://github.com/GeorgLegato/Txt2Vectorgraphics.git repositories/Txt2Vectorgraphics && cd repositories/Txt2Vectorgraphics && git reset --hard ${Txt2Vectorgraphics}
+RUN git clone https://github.com/ThereforeGames/txt2mask.git repositories/txt2mask && cd repositories/txt2mask && git reset --hard ${txt2mask}
+RUN git clone https://github.com/dfaker/stable-diffusion-webui-cv2-external-masking-script.git repositories/stable-diffusion-webui-cv2-external-masking-script && cd repositories/stable-diffusion-webui-cv2-external-masking-script && git reset --hard ${stable_diffusion_webui_cv2_external_masking_script}
+RUN git clone https://github.com/memes-forever/Stable-diffusion-webui-video.git repositories/Stable-diffusion-webui-video && cd repositories/Stable-diffusion-webui-video && git reset --hard ${Stable_diffusion_webui_video}
+RUN git clone https://github.com/jquesnelle/txt2imghd.git repositories/txt2imghd && cd repositories/txt2imghd && git reset --hard ${txt2imghd}
+RUN git clone https://github.com/dfaker/embedding-to-png-script.git repositories/embedding-to-png-script && cd repositories/embedding-to-png-script && git reset --hard ${embedding_to_png_script}
+
+############################################################################################################################################################################################
 FROM python:3.10-slim
 
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
-ARG TENSORFLOW="intel-tensorflow==2.9.1"
+ARG TENSORFLOW="intel-tensorflow==2.10.0"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
-ARG AUTO1111_SHA="c57919ea2a8e4a23a05d21f28928e08bbf34c59e"
+
+ARG AUTO1111_SHA="c1093b8051606f0ac90506b7114c4b55d0447c70"
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"
 ARG DeepDanbooru_SHA="12e3a13d1d0369f5008376907aa752188772dfe1"
@@ -44,7 +70,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_PREFER_BINARY=1
 ENV PIP_NO_CACHE_DIR=1
 ENV ROOT=/stable-diffusion-webui
-ENV WORKDIR=/stable-diffusion-webui/repositories/stable-diffusion
+ENV EXTENSIONSDIR=${ROOT}/custom_scripts
+ENV REPODIR=${ROOT}/repositories
+ENV WORKDIR=${REPODIR}/stable-diffusion
 ENV TF_ENABLE_ONEDNN_OPTS=1
 ENV MAX_GCC_VERSION=10
 
@@ -152,11 +180,68 @@ RUN <<EOF
 # DeepDanbooru
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[${TENSORFLOW}] ${TENSORFLOW}==2.10.0 tensorflow-io==0.27.0
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] ${TENSORFLOW} tensorflow-io==0.27.0
 EOF
 #################################################################################################################################################
+COPY --from=custom_scripts /git/repositories/ ${EXTENSIONSDIR}
 
+RUN <<EOF
+# a1111-sd-webui-tagcomplete
+cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/{javascript,tags,scripts} ${ROOT}/
+cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/tags ${WORKDIR}/
+EOF
+
+RUN <<EOF
+# deforum-for-automatic1111-webui
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+cp -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/{deforum.py,deforum} ${ROOT}/scripts/
+pip install --extra-index-url ${PIP_REPOSITORY} -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/requirements.txt
+EOF
+
+RUN <<EOF
+# Txt2Vectorgraphics
+cp -r ${EXTENSIONSDIR}/Txt2Vectorgraphics/*.py ${ROOT}/scripts/
+EOF
+
+RUN <<EOF
+# txt2mask
+cp -r ${EXTENSIONSDIR}/txt2mask/{docs,repositories,scripts} ${ROOT}/
+EOF
+
+RUN <<EOF
+# stable-diffusion-webui-cv2-external-masking-script
+#cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-cv2-external-masking-script/external_masking.py ${ROOT}/scripts/
+EOF
+
+RUN <<EOF
+# Stable-diffusion-webui-video
+cp -r ${EXTENSIONSDIR}/Stable-diffusion-webui-video/videos.py ${ROOT}/scripts/
+EOF
+
+RUN <<EOF
+# txt2imghd
+cp -r ${EXTENSIONSDIR}/txt2imghd/txt2imghd.py ${ROOT}/scripts/
+EOF
+
+RUN <<EOF
+# embedding-to-png-script
+cp -r ${EXTENSIONSDIR}/embedding-to-png-script/embedding_to_png.py ${ROOT}/scripts/
+EOF
+
+RUN <<EOF
+# apt
+apt-get install curl tk potrace -y #libgtk2.0-dev
+EOF
+
+RUN <<EOF
+# alternate_sampler_noise_schedules
+curl -o ${ROOT}/scripts/alternate_sampler_noise_schedules.py https://gist.githubusercontent.com/dfaker/f88aa62e3a14b559fe4e5f6b345db664/raw/791dabfa0ab26399aa2635bcbc1cf6267aa4ffc2/alternate_sampler_noise_schedules.py
+EOF
+
+#################################################################################################################################################
 COPY ./scripts /docker/
+
 RUN <<EOF
 source ${ROOT}/venv/bin/activate
 chmod +x /docker/{run,mount}.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
