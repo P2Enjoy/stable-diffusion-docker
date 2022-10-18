@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-      
+
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
@@ -47,7 +47,7 @@ ENV ROOT=/stable-diffusion-webui
 ENV WORKDIR=/stable-diffusion-webui/repositories/stable-diffusion
 ENV TF_ENABLE_ONEDNN_OPTS=1
 ENV MAX_GCC_VERSION=10
-  
+
 RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get full-upgrade -y && apt-get autopurge -y
 
 #GCC
@@ -75,7 +75,7 @@ pip install --extra-index-url ${PIP_REPOSITORY} setuptools
 pip install --extra-index-url ${PIP_REPOSITORY} wheel
 pip install --extra-index-url ${PIP_REPOSITORY} ninja
 
-pip install --extra-index-url ${PIP_REPOSITORY} ${TENSORFLOW} torch==1.12.1+cu116 torchvision==0.13.1+cu116 
+pip install --extra-index-url ${PIP_REPOSITORY} ${TENSORFLOW} torch==1.12.1+cu116 torchvision==0.13.1+cu116
 
 pip install --extra-index-url ${PIP_REPOSITORY} pyngrok
 EOF
@@ -98,7 +98,7 @@ RUN <<EOF
 # Codeformer
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/CodeFormer/requirements.txt 
+pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/CodeFormer/requirements.txt
 EOF
 
 #################################################################################################################################################
@@ -119,10 +119,10 @@ pip install --extra-index-url ${PIP_REPOSITORY} opencv-python-headless
 EOF
 
 RUN <<EOF
-# opencv
+# numpy
 cd ${ROOT}
 source ${ROOT}/venv/bin/activate
-pip install --extra-index-url ${PIP_REPOSITORY} -U numpy 
+pip install --extra-index-url ${PIP_REPOSITORY} -U numpy
 EOF
 
 #################################################################################################################################################
@@ -148,7 +148,8 @@ source ${ROOT}/venv/bin/activate
 pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers*.whl
 EOF
 
-RUN <<EOF #DeepDanbooru
+RUN <<EOF
+# DeepDanbooru
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[${TENSORFLOW}] ${TENSORFLOW}==2.10.0 tensorflow-io==0.27.0

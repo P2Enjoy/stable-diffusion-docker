@@ -8,11 +8,11 @@ x-gpu-base-service: &gpu_service
           - driver: nvidia
             device_ids: ['0']
             capabilities: [gpu]
-              
+
 x-base_service: &base_service
   ports:
     - "7860:7860"
-  build: 
+  build:
       context: ./services/AUTOMATIC1111
   volumes:
     - &v1 ./data:/data
@@ -31,7 +31,7 @@ services:
     profiles: ["download"]
     volumes:
       - *v1
-      
+
   xformer:
     <<: *gpu_service
     build: ./services/xformers/
@@ -44,7 +44,7 @@ services:
     <<: *gpu_service
     profiles: ["auto"]
     environment:
-      - CLI_ARGS=--opt-split-attention --opt-split-attention-invokeai --allow-code --medvram --xformers --gradio-img2img-tool color-sketch #--deepdanbooru #--ngrok pyngrok 
+      - CLI_ARGS=--opt-split-attention --opt-split-attention-invokeai --allow-code --medvram --xformers --gradio-img2img-tool color-sketch #--deepdanbooru #--ngrok pyngrok
 
   auto-cpu:
     <<: *base_service
