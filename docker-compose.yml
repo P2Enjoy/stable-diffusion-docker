@@ -1,35 +1,27 @@
 version: '3.9'
 
+x-gpu-base-service: &gpu_service
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+              
 x-base_service: &base_service
-    build:
-      args:
-        - XFORMER_SHA=${XFORMER_SHA}
-        - stableDiffusion_SHA=69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc
-        - codeFormer_SHA=fa547b7aba3ef0a2b1b8db9956e6dba2984de218
-        - BLIP_SHA=3a29b7410476bf5f2ba0955827390eb6ea1f4f9d
-        - latentDiffusion_SHA=abf33e7002d59d9085081bce93ec798dcabd49af
-        - tamingTransformers_SHA=3633e1afc7bffbe61957f04e7bb1a742ee910ace
-        - kDiffusion_SHA=f4e99857772fc3a126ba886aadf795a332774878
-        - AUTO1111_SHA=c57919ea2a8e4a23a05d21f28928e08bbf34c59e
-        - TencentARC_SHA=2eac2033893ca7f427f4035d80fe95b92649ac56
-        - CLIP_SHA=d50d76daa670286dd6cacf3bcd80b5e4823fc8e1
-        - DeepDanbooru_SHA=12e3a13d1d0369f5008376907aa752188772dfe1
-    ports:
-      - "7860:7860"
-    volumes:
-      - &v1 ./data:/data
-      - &v2 ./output:/output
-    deploy:
-      restart_policy:
-        delay: 5s
-        max_attempts: 10
-        window: 120s
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              device_ids: ['0']
-              capabilities: [gpu]
+  ports:
+    - "7860:7860"
+  build: 
+      context: ./services/AUTOMATIC1111
+  volumes:
+    - &v1 ./data:/data
+    - &v2 ./output:/output
+  deploy:
+    restart_policy:
+      delay: 5s
+      max_attempts: 10
+      window: 120s
 
 name: webui-docker
 
@@ -39,20 +31,23 @@ services:
     profiles: ["download"]
     volumes:
       - *v1
+      
+  xformer:
+    <<: *gpu_service
+    build: ./services/xformers/
+    profiles: ["xformer"]
+    volumes:
+      - ./services/xformers/data:/data
 
   auto: &automatic
     <<: *base_service
+    <<: *gpu_service
     profiles: ["auto"]
-    build: ./services/AUTOMATIC1111
-    volumes:
-      - *v1
-      - *v2
     environment:
-      - CLI_ARGS=--deepdanbooru --opt-split-attention --allow-code --lowvram --xformers #--ngrok pyngrok 
+      - CLI_ARGS=--opt-split-attention --opt-split-attention-invokeai --allow-code --medvram --xformers --gradio-img2img-tool color-sketch #--deepdanbooru #--ngrok pyngrok 
 
   auto-cpu:
-    <<: *automatic
+    <<: *base_service
     profiles: ["auto-cpu"]
-    deploy: {}
     environment:
-      - CLI_ARGS=--no-half --precision full
+      - CLI_ARGS=--no-half --precision full --gradio-img2img-tool color-sketch

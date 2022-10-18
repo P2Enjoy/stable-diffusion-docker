@@ -16,3 +16,6 @@
 /Hypernetworks
 /embeddings
 /deepbooru
+#Generated pip wheels
+/*.whl
+/build.log

@@ -1,67 +1,18 @@
 # syntax=docker/dockerfile:1
-ARG XFORMER_SHA=HEAD
-FROM nvidia/cuda:11.6-devel-ubuntu20.04 as CUDA
-
-SHELL ["/bin/bash", "-ceuxo", "pipefail"]
-
-ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
-
-#python
-RUN <<EOF
-apt-get update
-apt-get install git curl -y
-echo "
-deb https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main 
-deb-src https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main 
-" >> /etc/apt/sources.list
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776
-apt-get update
-
-apt-get install python3\.10-minimal python3\.10-venv -y
-apt-get purge python3
-update-alternatives --install /usr/bin/python python $(which python3.10) 1
-python --version
-python -m ensurepip --upgrade
-EOF
-
-#xformers sources
-RUN <<EOF
-git clone https://github.com/facebookresearch/xformers.git /xformers
-cd /xformers
-git reset --hard ${XFORMER_SHA}
-git submodule update --init --recursive
-EOF
-
-#python ML
-RUN <<EOF
-cd /xformers
-pip install --prefer-binary --no-cache-dir torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
-EOF
-
-#xformers build
-RUN <<EOF
-cd /xformers
-pip install --prefer-binary --no-cache-dir setuptools==49.6.0
-pip install --prefer-binary --no-cache-dir -r requirements.txt
-pip install --prefer-binary --no-cache-dir wheel
-pip install --prefer-binary --no-cache-dir ninja
-export TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.2;7.5;8.0;8.6"
-export MAKEFLAGS="-j$(nproc)" FORCE_CUDA=1 NVCC_FLAGS="--use_fast_math -allow-unsupported-compiler" #-DXFORMERS_MEM_EFF_ATTENTION_DISABLE_BACKWARD
-python setup.py build
-python setup.py bdist_wheel
-EOF
-
+      
 ############################################################################################################################################################################################
-ARG stableDiffusion_SHA=HEAD
-ARG codeFormer_SHA=HEAD
-ARG BLIP_SHA=HEAD
-ARG latentDiffusion_SHA=HEAD
-ARG tamingTransformers_SHA=HEAD
-ARG kDiffusion_SHA=HEAD
 FROM alpine/git:2.36.2 as download
+
+ARG stableDiffusion_SHA="69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc"
+ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"
+ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"
+ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"
+ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"
+ARG kDiffusion_SHA="f4e99857772fc3a126ba886aadf795a332774878"
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
+WORKDIR /git
 RUN git clone https://github.com/CompVis/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusion_SHA}
 RUN git clone https://github.com/sczhou/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
 RUN git clone https://github.com/salesforce/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
@@ -77,63 +28,141 @@ EOF
 RUN git clone https://github.com/crowsonkb/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
 
 ############################################################################################################################################################################################
-ARG AUTO1111_SHA=HEAD
-ARG TencentARC_SHA=HEAD
-ARG CLIP_SHA=HEAD
-ARG DeepDanbooru_SHA=HEAD
 FROM python:3.10-slim
+
+#tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
+ARG TENSORFLOW="intel-tensorflow==2.9.1"
+ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
+ARG AUTO1111_SHA="c57919ea2a8e4a23a05d21f28928e08bbf34c59e"
+ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"
+ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"
+ARG DeepDanbooru_SHA="12e3a13d1d0369f5008376907aa752188772dfe1"
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-ENV DEBIAN_FRONTEND=noninteractive PIP_PREFER_BINARY=1 PIP_NO_CACHE_DIR=1
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PIP_PREFER_BINARY=1
+ENV PIP_NO_CACHE_DIR=1
 ENV ROOT=/stable-diffusion-webui
 ENV WORKDIR=/stable-diffusion-webui/repositories/stable-diffusion
+ENV TF_ENABLE_ONEDNN_OPTS=1
+ENV MAX_GCC_VERSION=10
   
-RUN pip install --prefer-binary --no-cache-dir torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get full-upgrade -y && apt-get autopurge -y
 
-RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get clean
+#GCC
+RUN <<EOF
+apt-get install gcc-$MAX_GCC_VERSION g++-$MAX_GCC_VERSION -y
+EOF
 
 RUN <<EOF
 git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git ${ROOT}
 cd ${ROOT}
 git pull --rebase
-git reset --hard ${SHA}
+git reset --hard ${AUTO1111_SHA}
 python -m venv venv
 source ${ROOT}/venv/bin/activate
+python -m ensurepip
 EOF
 
 COPY --from=download /git/ ${ROOT}
-RUN source ${ROOT}/venv/bin/activate && pip install --prefer-binary --no-cache-dir -r ${ROOT}/repositories/CodeFormer/requirements.txt
-RUN source ${ROOT}/venv/bin/activate && pip install --prefer-binary --no-cache-dir opencv-python-headless
-RUN source ${ROOT}/venv/bin/activate && pip install --prefer-binary --no-cache-dir git+https://github.com/TencentARC/GFPGAN.git@${TencentARC_SHA} 
-RUN source ${ROOT}/venv/bin/activate && pip install --prefer-binary --no-cache-dir git+https://github.com/openai/CLIP.git@${CLIP_SHA}
-RUN source ${ROOT}/venv/bin/activate && pip install --prefer-binary --no-cache-dir pyngrok 
-
-COPY --from=CUDA  /xformers/dist/xformers*.whl ${ROOT}/repositories/
-
 RUN <<EOF
-#webui
-cd ${ROOT}
+# Build requirements
 source ${ROOT}/venv/bin/activate
-pip install setuptools==49.6.0
-pip install wheel
-pip install ninja
-pip install ${ROOT}/repositories/*.whl
-pip install -r ${ROOT}/requirements_versions.txt
-pip install -r ${ROOT}/requirements.txt
+pip install --upgrade pip
+
+pip install --extra-index-url ${PIP_REPOSITORY} setuptools
+pip install --extra-index-url ${PIP_REPOSITORY} wheel
+pip install --extra-index-url ${PIP_REPOSITORY} ninja
+
+pip install --extra-index-url ${PIP_REPOSITORY} ${TENSORFLOW} torch==1.12.1+cu116 torchvision==0.13.1+cu116 
+
+pip install --extra-index-url ${PIP_REPOSITORY} pyngrok
 EOF
 
-RUN source ${ROOT}/venv/bin/activate && pip install --prefer-binary --no-cache-dir git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] tensorflow==2.10.0 tensorflow-io==0.27.0
+RUN <<EOF
+# transformers.git
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} transformers==4.19.2 diffusers invisible-watermark
+EOF
 
-COPY . /docker
+RUN <<EOF
+# k-diffusion
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/k-diffusion/requirements.txt
+EOF
+
+RUN <<EOF
+# Codeformer
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/CodeFormer/requirements.txt 
+EOF
+
+#################################################################################################################################################
+
+RUN <<EOF
+# webui
+cd ${ROOT}
+source ${ROOT}/venv/bin/activate
+#pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/requirements_versions.txt
+pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/requirements.txt
+EOF
+
+RUN <<EOF
+# opencv
+cd ${ROOT}
+source ${ROOT}/venv/bin/activate
+pip install --extra-index-url ${PIP_REPOSITORY} opencv-python-headless
+EOF
+
+RUN <<EOF
+# opencv
+cd ${ROOT}
+source ${ROOT}/venv/bin/activate
+pip install --extra-index-url ${PIP_REPOSITORY} -U numpy 
+EOF
+
+#################################################################################################################################################
+RUN <<EOF
+# GFPGAN
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/TencentARC/GFPGAN.git@${GFPGAN_SHA}
+EOF
+
+RUN <<EOF
+# CLIP
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/openai/CLIP.git@${CLIP_SHA}
+EOF
+
+COPY ./data/xformers*.whl /docker/
+RUN <<EOF
+# xformers
+cd ${ROOT}
+source ${ROOT}/venv/bin/activate
+pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers*.whl
+EOF
+
+RUN <<EOF #DeepDanbooru
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[${TENSORFLOW}] ${TENSORFLOW}==2.10.0 tensorflow-io==0.27.0
+EOF
+#################################################################################################################################################
+
+COPY ./scripts /docker/
 RUN <<EOF
 source ${ROOT}/venv/bin/activate
-chmod +x /docker/mount.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
+chmod +x /docker/{run,mount}.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
 EOF
 
 ENV CLI_ARGS=""
 WORKDIR ${WORKDIR}
 EXPOSE 7860
 # run, -u to not buffer stdout/stderr
-CMD /docker/mount.sh && \
-  source ../../venv/bin/activate && python3 -u ../../webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion ${CLI_ARGS}
+CMD /docker/run.sh -u ../../webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion ${CLI_ARGS}
