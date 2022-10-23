@@ -1,0 +1,17 @@
+tbb
+tbb4py
+intel-opencl-rt
+intel-openmp
+mkl
+dpcpp-cpp-rt
+neural-compressor
+onednn-cpu-dpcpp-gpu-dpcpp
+pip
+numpy
+wheel
+packaging
+requests
+opt_einsum
+google
+protobuf<=3.20.0
+

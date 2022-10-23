@@ -3,10 +3,9 @@
 ############################################################################################################################################################################################
 FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
 
-#tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
-ARG TENSORFLOW="intel-tensorflow==2.10.0"
-ARG TORCH_CUDA_ARCH_LIST="7.5+PTX"
-ARG XFORMER_SHA="3633e1afc7bffbe61957f04e7bb1a742ee910ace"
+#From the compiled images of tensorflow container
+ARG TENSORFLOW="/data/tensorflow-*.whl"
+ARG XFORMER_SHA="faa88b123514562dbe8e32ec72a25937b0dd9da5" #https://github.com/facebookresearch/xformers/commits/main
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -17,6 +16,7 @@ ENV TF_ENABLE_ONEDNN_OPTS=1
 ENV MAX_GCC_VERSION=10
 ENV MAKEFLAGS="-j12" 
 ENV FORCE_CUDA=1 
+ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
 ENV NVCC_FLAGS="--use_fast_math -allow-unsupported-compiler" 
 
 RUN <<EOF
@@ -24,9 +24,10 @@ RUN <<EOF
 apt-get update
 apt-get full-upgrade -y
 apt-get install git curl -y
+. /etc/os-release
 echo "
-deb https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main 
-deb-src https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu focal main 
+deb https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu ${VERSION_CODENAME} main
+deb-src https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu ${VERSION_CODENAME} main
 " >> /etc/apt/sources.list
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776
 apt-get update

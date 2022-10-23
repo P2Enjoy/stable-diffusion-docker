@@ -2,4 +2,4 @@
 
 set -Eeuo pipefail
 
-cp /xformers/dist/*.whl /data/
+cp /xformers/dist/*.whl /deploy/

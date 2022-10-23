@@ -1,6 +1,8 @@
 version: '3.9'
 
 x-gpu-base-service: &gpu_service
+  volumes:
+    - &v3 ./services/xformers/data:/data:ro
   deploy:
     resources:
       reservations:
@@ -37,7 +39,17 @@ services:
     build: ./services/xformers/
     profiles: ["xformer"]
     volumes:
-      - ./services/xformers/data:/data
+      - ./services/xformers/data:/deploy
+      - ./services/cuDNN/data:/data:ro
+
+  tensorflow:
+    <<: *gpu_service
+    build: ./services/cuDNN/
+    profiles: ["tensorflow"]
+    volumes:
+      - ./services/cuDNN/data:/deploy
+    stdin_open: true
+    tty: true
 
   auto: &automatic
     <<: *base_service

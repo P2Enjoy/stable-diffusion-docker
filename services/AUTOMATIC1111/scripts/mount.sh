@@ -27,6 +27,7 @@ MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
 
 MOUNTS["${ROOT}/config.json"]="/data/config/auto/config.json"
+MOUNTS["${ROOT}/ui-config.json"]="/data/config/auto/ui-config.json"
 
 
 # extra hacks

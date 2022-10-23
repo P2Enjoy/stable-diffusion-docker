@@ -56,13 +56,14 @@ RUN git clone https://github.com/dfaker/embedding-to-png-script.git repositories
 FROM python:3.10-slim
 
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
-ARG TENSORFLOW="intel-tensorflow==2.10.0"
+ARG TENSORFLOW="/data/tensorflow-*.whl"
+ARG TENSORFLOW_VERSION="tensorflow=2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="c1093b8051606f0ac90506b7114c4b55d0447c70"
-ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"
-ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"
-ARG DeepDanbooru_SHA="12e3a13d1d0369f5008376907aa752188772dfe1"
+ARG AUTO1111_SHA="c1093b8051606f0ac90506b7114c4b55d0447c70"		#https://github.com/AUTOMATIC1111/stable-diffusion-webui/commits/master
+ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/TencentARC/GFPGAN/commits/master
+ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/openai/CLIP/commits/main
+ARG DeepDanbooru_SHA="12e3a13d1d0369f5008376907aa752188772dfe1"		#https://github.com/KichangKim/DeepDanbooru.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -130,7 +131,6 @@ pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/CodeForm
 EOF
 
 #################################################################################################################################################
-
 RUN <<EOF
 # webui
 cd ${ROOT}
@@ -180,8 +180,9 @@ RUN <<EOF
 # DeepDanbooru
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] ${TENSORFLOW} tensorflow-io==0.27.0
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] ${TENSORFLOW_VERSION} tensorflow-io==0.27.0
 EOF
+
 #################################################################################################################################################
 COPY --from=custom_scripts /git/repositories/ ${EXTENSIONSDIR}
 
@@ -237,6 +238,38 @@ EOF
 RUN <<EOF
 # alternate_sampler_noise_schedules
 curl -o ${ROOT}/scripts/alternate_sampler_noise_schedules.py https://gist.githubusercontent.com/dfaker/f88aa62e3a14b559fe4e5f6b345db664/raw/791dabfa0ab26399aa2635bcbc1cf6267aa4ffc2/alternate_sampler_noise_schedules.py
+EOF
+
+#################################################################################################################################################
+RUN <<EOF
+#gnupg
+apt-get update
+apt install gnupg2 -y
+EOF
+
+RUN <<EOF
+#cuda
+#. /etc/os-release
+ID="ubuntu"
+VERSION_ID="20.04"
+curl -O /etc/apt/preferences.d/cuda-repository-pin-600 https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/cuda-${ID}${VERSION_ID/\./}.pin
+echo "
+deb https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64 /
+" > /etc/apt/sources.list.d/cuda.list
+
+VERSION_ID="18.04"
+echo "
+deb https://developer.download.nvidia.com/compute/machine-learning/repos/${ID}${VERSION_ID/\./}/x86_64 /
+" > /etc/apt/sources.list.d/tensorRT.list
+
+apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/7fa2af80.pub
+apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/3bf863cc.pub
+apt-get update
+
+LIBNVINFER_MAJOR_VERSION=7
+LIBNVINFER=7.2.2
+CUDA_VERSION=11.1
+apt install libnvinfer${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER}-1+cuda${CUDA_VERSION} libnvinfer-plugin${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER}-1+cuda${CUDA_VERSION} cuda-nvrtc-${CUDA_VERSION/./-} -y
 EOF
 
 #################################################################################################################################################
