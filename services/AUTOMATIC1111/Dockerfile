@@ -3,12 +3,12 @@
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
-ARG stableDiffusion_SHA="69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc"
-ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"
-ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"
-ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"
-ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"
-ARG kDiffusion_SHA="f4e99857772fc3a126ba886aadf795a332774878"
+ARG stableDiffusion_SHA="69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc"	#https://github.com/CompVis/stable-diffusion.git
+ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/sczhou/CodeFormer.git
+ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/salesforce/BLIP.git
+ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/Hafiidz/latent-diffusion.git
+ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/CompVis/taming-transformers.git
+ARG kDiffusion_SHA="f4e99857772fc3a126ba886aadf795a332774878"		#https://github.com/crowsonkb/k-diffusion.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -30,14 +30,14 @@ RUN git clone https://github.com/crowsonkb/k-diffusion.git repositories/k-diffus
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as custom_scripts
 
-ARG a1111_sd_webui_tagcomplete="353cb1937e82750d1859d6fd8c24e532c7d19e59"
-ARG deforum_for_automatic1111_webui="ac8fed9ed705b43975dd14f69de3e253e69750dc"
-ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"
-ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"
-ARG stable_diffusion_webui_cv2_external_masking_script="a6ae5ce5c1aabd51d4162850047a41914a38a593"
-ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"
-ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"
-ARG embedding_to_png_script="a764f1b4e8c21d84ad36e72a9924078714d59b93"
+ARG a1111_sd_webui_tagcomplete="3759ec055a0486cc345f5d989af2438607d7a447"				#https://github.com/DominikDoom/a1111-sd-webui-tagcomplete.git
+ARG deforum_for_automatic1111_webui="000deeeef69016612fe3cdec9234f97d87d30748"				#https://github.com/deforum-art/deforum-for-automatic1111-webui.git
+ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/GeorgLegato/Txt2Vectorgraphics.git
+ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/ThereforeGames/txt2mask.git
+ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/dfaker/stable-diffusion-webui-cv2-external-masking-script.git
+ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#https://github.com/memes-forever/Stable-diffusion-webui-video.git
+ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/jquesnelle/txt2imghd.git
+ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/dfaker/embedding-to-png-script.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -60,10 +60,10 @@ ARG TENSORFLOW="/data/tensorflow-*.whl"
 ARG TENSORFLOW_VERSION="tensorflow=2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="c1093b8051606f0ac90506b7114c4b55d0447c70"		#https://github.com/AUTOMATIC1111/stable-diffusion-webui/commits/master
+ARG AUTO1111_SHA="6bd6154a92eb05c80d66df661a38f8b70cc13729"		#https://github.com/AUTOMATIC1111/stable-diffusion-webui/commits/master
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/TencentARC/GFPGAN/commits/master
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/openai/CLIP/commits/main
-ARG DeepDanbooru_SHA="12e3a13d1d0369f5008376907aa752188772dfe1"		#https://github.com/KichangKim/DeepDanbooru.git
+ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/KichangKim/DeepDanbooru/commits/master
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
