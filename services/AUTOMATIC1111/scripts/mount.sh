@@ -6,6 +6,10 @@ mkdir -p /data/config/auto/
 cp -n /docker/config.json /data/config/auto/config.json
 jq '. * input' /data/config/auto/config.json /docker/config.json | sponge /data/config/auto/config.json
 
+if [ ! -f /data/config/auto/ui-config.json ]; then
+  echo '{}' >/data/config/auto/ui-config.json
+fi
+
 declare -A MOUNTS
 
 MOUNTS["/root/.cache"]="/data/.cache"
@@ -25,10 +29,10 @@ MOUNTS["${ROOT}/models/deepbooru"]="/data/deepbooru"
 MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
+MOUNTS["${ROOT}/extensions/aesthetic-gradients/aesthetic_embeddings"]="/data/embeddings"
 
 MOUNTS["${ROOT}/config.json"]="/data/config/auto/config.json"
 MOUNTS["${ROOT}/ui-config.json"]="/data/config/auto/ui-config.json"
-
 
 # extra hacks
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="/data/.cache"

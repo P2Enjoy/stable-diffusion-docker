@@ -3,67 +3,74 @@
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
-ARG stableDiffusion_SHA="69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc"	#https://github.com/CompVis/stable-diffusion.git
-ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/sczhou/CodeFormer.git
-ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/salesforce/BLIP.git
-ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/Hafiidz/latent-diffusion.git
-ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/CompVis/taming-transformers.git
-ARG kDiffusion_SHA="f4e99857772fc3a126ba886aadf795a332774878"		#https://github.com/crowsonkb/k-diffusion.git
+ARG stableDiffusion_SHA="69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc"	#https://github.com/P2Enjoy/stable-diffusion.git
+ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/P2Enjoy/CodeFormer.git
+ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
+ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
+ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/P2Enjoy/taming-transformers.git
+ARG kDiffusion_SHA="f4e99857772fc3a126ba886aadf795a332774878"		#https://github.com/P2Enjoy/k-diffusion.git
+ARG clip_interrogator_SHA="2486589f24165c8e3b303f84e9dbbea318df83e8"	#https://github.com/P2Enjoy/clip-interrogator.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
 WORKDIR /git
-RUN git clone https://github.com/CompVis/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusion_SHA}
-RUN git clone https://github.com/sczhou/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
-RUN git clone https://github.com/salesforce/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
-RUN git clone https://github.com/Hafiidz/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
+RUN git clone https://github.com/P2Enjoy/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
+RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
 RUN <<EOF
 # because taming-transformers is huge
 git config --global http.postBuffer 1048576000
-git clone https://github.com/CompVis/taming-transformers.git repositories/taming-transformers
+git clone https://github.com/P2Enjoy/taming-transformers.git repositories/taming-transformers
 cd repositories/taming-transformers
 git reset --hard ${tamingTransformers_SHA}
 rm -rf data assets
 EOF
-RUN git clone https://github.com/crowsonkb/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
 
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as custom_scripts
 
-ARG a1111_sd_webui_tagcomplete="3759ec055a0486cc345f5d989af2438607d7a447"				#https://github.com/DominikDoom/a1111-sd-webui-tagcomplete.git
-ARG deforum_for_automatic1111_webui="000deeeef69016612fe3cdec9234f97d87d30748"				#https://github.com/deforum-art/deforum-for-automatic1111-webui.git
-ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/GeorgLegato/Txt2Vectorgraphics.git
-ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/ThereforeGames/txt2mask.git
-ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/dfaker/stable-diffusion-webui-cv2-external-masking-script.git
-ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#https://github.com/memes-forever/Stable-diffusion-webui-video.git
-ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/jquesnelle/txt2imghd.git
-ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/dfaker/embedding-to-png-script.git
+ARG a1111_sd_webui_tagcomplete="3759ec055a0486cc345f5d989af2438607d7a447"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
+ARG deforum_for_automatic1111_webui="000deeeef69016612fe3cdec9234f97d87d30748"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
+ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/P2Enjoy/Txt2Vectorgraphics.git
+ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/P2Enjoy/txt2mask.git
+ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/P2Enjoy/stable-diffusion-webui-cv2-external-masking-script.git
+ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#https://github.com/P2Enjoy/Stable-diffusion-webui-video.git
+ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/P2Enjoy/txt2imghd.git
+ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/P2Enjoy/embedding-to-png-script.git
+ARG stable_diffusion_webui_aesthetic_gradients="411889ca602f20b8bb5e4d1af2b9686eab1913b1" 		#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git
+ARG stable_diffusion_webui_images_browse="3f4ef11523b580b9e4859084c6a91dbfd4c44cb0" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
+ARG stable_diffusion_webui_inspiration="3a2a44f2d443d770191473a8452824128dc9c52b"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
 WORKDIR /git
 
-RUN git clone https://github.com/DominikDoom/a1111-sd-webui-tagcomplete.git repositories/a1111-sd-webui-tagcomplete && cd repositories/a1111-sd-webui-tagcomplete && git reset --hard ${a1111_sd_webui_tagcomplete}
-RUN git clone https://github.com/deforum-art/deforum-for-automatic1111-webui.git repositories/deforum-for-automatic1111-webui && cd repositories/deforum-for-automatic1111-webui && git reset --hard ${deforum_for_automatic1111_webui}
-RUN git clone https://github.com/GeorgLegato/Txt2Vectorgraphics.git repositories/Txt2Vectorgraphics && cd repositories/Txt2Vectorgraphics && git reset --hard ${Txt2Vectorgraphics}
-RUN git clone https://github.com/ThereforeGames/txt2mask.git repositories/txt2mask && cd repositories/txt2mask && git reset --hard ${txt2mask}
-RUN git clone https://github.com/dfaker/stable-diffusion-webui-cv2-external-masking-script.git repositories/stable-diffusion-webui-cv2-external-masking-script && cd repositories/stable-diffusion-webui-cv2-external-masking-script && git reset --hard ${stable_diffusion_webui_cv2_external_masking_script}
-RUN git clone https://github.com/memes-forever/Stable-diffusion-webui-video.git repositories/Stable-diffusion-webui-video && cd repositories/Stable-diffusion-webui-video && git reset --hard ${Stable_diffusion_webui_video}
-RUN git clone https://github.com/jquesnelle/txt2imghd.git repositories/txt2imghd && cd repositories/txt2imghd && git reset --hard ${txt2imghd}
-RUN git clone https://github.com/dfaker/embedding-to-png-script.git repositories/embedding-to-png-script && cd repositories/embedding-to-png-script && git reset --hard ${embedding_to_png_script}
+RUN git clone https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git repositories/a1111-sd-webui-tagcomplete && cd repositories/a1111-sd-webui-tagcomplete && git reset --hard ${a1111_sd_webui_tagcomplete}
+RUN git clone https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git repositories/deforum-for-automatic1111-webui && cd repositories/deforum-for-automatic1111-webui && git reset --hard ${deforum_for_automatic1111_webui}
+RUN git clone https://github.com/P2Enjoy/Txt2Vectorgraphics.git repositories/Txt2Vectorgraphics && cd repositories/Txt2Vectorgraphics && git reset --hard ${Txt2Vectorgraphics}
+RUN git clone https://github.com/P2Enjoy/txt2mask.git repositories/txt2mask && cd repositories/txt2mask && git reset --hard ${txt2mask}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-cv2-external-masking-script.git repositories/stable-diffusion-webui-cv2-external-masking-script && cd repositories/stable-diffusion-webui-cv2-external-masking-script && git reset --hard ${stable_diffusion_webui_cv2_external_masking_script}
+RUN git clone https://github.com/P2Enjoy/Stable-diffusion-webui-video.git repositories/Stable-diffusion-webui-video && cd repositories/Stable-diffusion-webui-video && git reset --hard ${Stable_diffusion_webui_video}
+RUN git clone https://github.com/P2Enjoy/txt2imghd.git repositories/txt2imghd && cd repositories/txt2imghd && git reset --hard ${txt2imghd}
+RUN git clone https://github.com/P2Enjoy/embedding-to-png-script.git repositories/embedding-to-png-script && cd repositories/embedding-to-png-script && git reset --hard ${embedding_to_png_script}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git repositories/stable-diffusion-webui-aesthetic-gradients && cd repositories/stable-diffusion-webui-aesthetic-gradients && git reset --hard ${stable_diffusion_webui_aesthetic_gradients}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git repositories/stable-diffusion-webui-images-browser && cd repositories/stable-diffusion-webui-images-browser && git reset --hard ${stable_diffusion_webui_images_browse}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git repositories/stable-diffusion-webui-inspiration && cd repositories/stable-diffusion-webui-inspiration && git reset --hard ${stable_diffusion_webui_inspiration}
 
 ############################################################################################################################################################################################
 FROM python:3.10-slim
 
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
-ARG TENSORFLOW="/data/tensorflow-*.whl"
-ARG TENSORFLOW_VERSION="tensorflow=2.10"
+ARG TENSORFLOW_VERSION="tensorflow==2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="6bd6154a92eb05c80d66df661a38f8b70cc13729"		#https://github.com/AUTOMATIC1111/stable-diffusion-webui/commits/master
-ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/TencentARC/GFPGAN/commits/master
-ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/openai/CLIP/commits/main
-ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/KichangKim/DeepDanbooru/commits/master
+ARG AUTO1111_SHA="HEAD"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
+ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
+ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/P2Enjoy/DeepDanbooru.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -85,7 +92,7 @@ apt-get install gcc-$MAX_GCC_VERSION g++-$MAX_GCC_VERSION -y
 EOF
 
 RUN <<EOF
-git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git ${ROOT}
+git clone https://github.com/P2Enjoy/stable-diffusion-webui.git ${ROOT}
 cd ${ROOT}
 git pull --rebase
 git reset --hard ${AUTO1111_SHA}
@@ -95,6 +102,9 @@ python -m ensurepip
 EOF
 
 COPY --from=download /git/ ${ROOT}
+
+RUN mkdir ${ROOT}/interrogate && cp ${ROOT}/repositories/clip-interrogator/data/* ${ROOT}/interrogate
+
 RUN <<EOF
 # Build requirements
 source ${ROOT}/venv/bin/activate
@@ -104,9 +114,17 @@ pip install --extra-index-url ${PIP_REPOSITORY} setuptools
 pip install --extra-index-url ${PIP_REPOSITORY} wheel
 pip install --extra-index-url ${PIP_REPOSITORY} ninja
 
-pip install --extra-index-url ${PIP_REPOSITORY} ${TENSORFLOW} torch==1.12.1+cu116 torchvision==0.13.1+cu116
+pip install --extra-index-url ${PIP_REPOSITORY} torch==1.12.1+cu116 torchvision==0.13.1+cu116
 
 pip install --extra-index-url ${PIP_REPOSITORY} pyngrok
+EOF
+
+COPY ./data/tensorflow-*.whl /docker/
+RUN <<EOF
+# tensorflow
+cd ${ROOT}
+source ${ROOT}/venv/bin/activate
+pip install --force-reinstall --extra-index-url ${PIP_REPOSITORY} /docker/tensorflow-*.whl
 EOF
 
 RUN <<EOF
@@ -158,38 +176,73 @@ RUN <<EOF
 # GFPGAN
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/TencentARC/GFPGAN.git@${GFPGAN_SHA}
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/GFPGAN.git@${GFPGAN_SHA}
 EOF
 
 RUN <<EOF
 # CLIP
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/openai/CLIP.git@${CLIP_SHA}
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/CLIP.git@${CLIP_SHA}
 EOF
 
-COPY ./data/xformers*.whl /docker/
+COPY ./data/xformers-*.whl /docker/
 RUN <<EOF
 # xformers
 cd ${ROOT}
 source ${ROOT}/venv/bin/activate
-pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers*.whl
+pip install --force-reinstall --extra-index-url ${PIP_REPOSITORY} /docker/xformers-*.whl
 EOF
 
 RUN <<EOF
 # DeepDanbooru
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/KichangKim/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] ${TENSORFLOW_VERSION} tensorflow-io==0.27.0
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] ${TENSORFLOW_VERSION} tensorflow-io==0.27.0
+EOF
+
+#################################################################################################################################################
+RUN <<EOF
+#gnupg
+apt-get update
+apt install gnupg2 curl -y
+EOF
+
+COPY ./data/libs/*.deb /docker/
+RUN <<EOF
+#cuda
+#. /etc/os-release
+ID="ubuntu"
+VERSION_ID="20.04"
+curl -O /etc/apt/preferences.d/cuda-repository-pin-600 https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/cuda-${ID}${VERSION_ID/\./}.pin
+echo "
+deb https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64 /
+" > /etc/apt/sources.list.d/cuda.list
+
+VERSION_ID="18.04"
+echo "
+deb https://developer.download.nvidia.com/compute/machine-learning/repos/${ID}${VERSION_ID/\./}/x86_64 /
+" > /etc/apt/sources.list.d/tensorRT.list
+
+apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/7fa2af80.pub
+apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/3bf863cc.pub
+apt-get update
+
+apt install /docker/*.deb -y
+EOF
+
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda-11.2/targets/x86_64-linux/lib/:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/local/cuda-11.0/targets/x86_64-linux/lib"
+RUN <<EOF
+#fix LDCONFIG
+ldconfig
 EOF
 
 #################################################################################################################################################
 COPY --from=custom_scripts /git/repositories/ ${EXTENSIONSDIR}
 
 RUN <<EOF
-# a1111-sd-webui-tagcomplete
-cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/{javascript,tags,scripts} ${ROOT}/
-cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/tags ${WORKDIR}/
+# apt for extensions/custom scripts
+apt-get install tk potrace ffmpeg unzip -y #libgtk2.0-dev
 EOF
 
 RUN <<EOF
@@ -198,6 +251,12 @@ source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 cp -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/{deforum.py,deforum} ${ROOT}/scripts/
 pip install --extra-index-url ${PIP_REPOSITORY} -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/requirements.txt
+EOF
+
+RUN <<EOF
+# a1111-sd-webui-tagcomplete
+#cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/{javascript,tags,scripts} ${ROOT}/
+#cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/tags ${WORKDIR}/
 EOF
 
 RUN <<EOF
@@ -231,45 +290,26 @@ cp -r ${EXTENSIONSDIR}/embedding-to-png-script/embedding_to_png.py ${ROOT}/scrip
 EOF
 
 RUN <<EOF
-# apt
-apt-get install curl tk potrace -y #libgtk2.0-dev
-EOF
-
-RUN <<EOF
 # alternate_sampler_noise_schedules
 curl -o ${ROOT}/scripts/alternate_sampler_noise_schedules.py https://gist.githubusercontent.com/dfaker/f88aa62e3a14b559fe4e5f6b345db664/raw/791dabfa0ab26399aa2635bcbc1cf6267aa4ffc2/alternate_sampler_noise_schedules.py
 EOF
 
-#################################################################################################################################################
 RUN <<EOF
-#gnupg
-apt-get update
-apt install gnupg2 -y
+# aesthetic_gradients
+mkdir -p ${ROOT}/extensions
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-aesthetic-gradients ${ROOT}/extensions/aesthetic-gradients
 EOF
 
 RUN <<EOF
-#cuda
-#. /etc/os-release
-ID="ubuntu"
-VERSION_ID="20.04"
-curl -O /etc/apt/preferences.d/cuda-repository-pin-600 https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/cuda-${ID}${VERSION_ID/\./}.pin
-echo "
-deb https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64 /
-" > /etc/apt/sources.list.d/cuda.list
+# aesthetic_gradients
+mkdir -p ${ROOT}/extensions
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-images-browser ${ROOT}/extensions/images-browser
+EOF
 
-VERSION_ID="18.04"
-echo "
-deb https://developer.download.nvidia.com/compute/machine-learning/repos/${ID}${VERSION_ID/\./}/x86_64 /
-" > /etc/apt/sources.list.d/tensorRT.list
-
-apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/7fa2af80.pub
-apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/${ID}${VERSION_ID/\./}/x86_64/3bf863cc.pub
-apt-get update
-
-LIBNVINFER_MAJOR_VERSION=7
-LIBNVINFER=7.2.2
-CUDA_VERSION=11.1
-apt install libnvinfer${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER}-1+cuda${CUDA_VERSION} libnvinfer-plugin${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER}-1+cuda${CUDA_VERSION} cuda-nvrtc-${CUDA_VERSION/./-} -y
+RUN <<EOF
+# inspiration
+mkdir -p ${ROOT}/extensions
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-inspiration ${ROOT}/extensions/webui-inspiration
 EOF
 
 #################################################################################################################################################
@@ -284,4 +324,4 @@ ENV CLI_ARGS=""
 WORKDIR ${WORKDIR}
 EXPOSE 7860
 # run, -u to not buffer stdout/stderr
-CMD /docker/run.sh -u ../../webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion ${CLI_ARGS}
+CMD /docker/run.sh -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion ${CLI_ARGS}

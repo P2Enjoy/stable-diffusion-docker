@@ -18,3 +18,5 @@ magnet:?xt=urn:btih:2daef5b5f63a16a9af9169a529b1a773fc452637&dn=v1-5-pruned-emao
   seed-time=0
   # this is the only way aria2c won't fail if the file already exists
   check-integrity=true
+https://huggingface.co/datasets/yfszzx/inspiration/resolve/main/inspiration.zip
+  out=inspiration.zip

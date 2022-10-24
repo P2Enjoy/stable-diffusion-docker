@@ -19,3 +19,7 @@
 #Generated pip wheels
 /*.whl
 /build.log
+/inspiration.zip
+/*-requirements.txt
+/requirements.txt
+/Deforum

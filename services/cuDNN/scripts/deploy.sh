@@ -46,7 +46,7 @@ then
 	if [[ ! "$(ls -A /deploy/tensorflow-*.whl)" ]];
 	then
 		echo "COMPILED WHEELS OF tensorflow ARE BEING CACHED ON ./data folder"
-		cp /data/tensorflow-*.whl /deploy/tensorflow-*.whl
+		cp /data/tensorflow-*.whl /deploy/
 	fi
 	
 	# check python 

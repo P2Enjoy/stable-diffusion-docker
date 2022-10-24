@@ -106,7 +106,7 @@ RUN <<EOF
 #nccl
 if [[ ! -d /data/nccl ]]; then
 	apt install -y devscripts debhelper fakeroot #build-essential
-	git clone http://github.com/nvidia/nccl
+	git clone https://github.com/P2Enjoy/nccl.git
 fi;
 if [[ ! "$(ls -A /data/nccl/build/pkg/deb/*.deb)" ]];
 then
@@ -130,22 +130,26 @@ then
 	git clone https://github.com/tensorflow/tensorflow
 	cd /data/tensorflow
 	git checkout ${GIT_BRANCH}
-	cd ..
 fi;
-cd tensorflow
-apt update
-apt install bazel bazel-$(cat /data/tensorflow/.bazelversion) -y
-if [[ -s .tf_configure.bazelrc ]] && [[ ! "$(ls -A /data/tensorflow-*.whl)" ]];
+EOF
+
+RUN <<EOF
+#compile
+if [[ -s /data/tensorflow/.tf_configure.bazelrc ]] && [[ ! "$(ls -A /data/tensorflow-*.whl)" ]];
 then
+	apt update
+	apt install bazel bazel-$(cat /data/tensorflow/.bazelversion) -y
+	cd /data/tensorflow
 	#-Wno-sign-compare -march=native -DONEDNN_ARCH_OPT_FLAGS=-march=native -DONEDNN_GPU_RUNTIME=SYCL -DONEDNN_CPU_RUNTIME=SYCL -DONEDNN_ENABLE_CONCURRENT_EXEC=ON -DONEDNN_ENABLE_JIT_PROFILING=OFF -DONEDNN_ENABLE_ITT_TASKS=OFF -DONEDNN_EXPERIMENTAL=ON -DONEDNN_GPU_VENDOR=NVIDIA
 	bazel build --config=linux --config=opt --config=mkl --config=cuda --config=tensorrt //tensorflow/tools/pip_package:build_pip_package
 fi
 EOF
 
 RUN <<EOF
-#wheel
-if [[ ! "$(ls -A /data/tensorflow-*.whl)" ]];
+#package
+if [[ -s /data/tensorflow/.tf_configure.bazelrc ]] && [[ ! "$(ls -A /data/tensorflow-*.whl)" ]];
 then
+	cd /data/tensorflow
 	bazel-bin/tensorflow/tools/pip_package/build_pip_package /data/
 fi
 EOF

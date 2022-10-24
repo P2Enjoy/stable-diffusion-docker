@@ -4,7 +4,6 @@
 FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
 
 #From the compiled images of tensorflow container
-ARG TENSORFLOW="/data/tensorflow-*.whl"
 ARG XFORMER_SHA="faa88b123514562dbe8e32ec72a25937b0dd9da5" #https://github.com/facebookresearch/xformers/commits/main
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
@@ -18,6 +17,7 @@ ENV MAKEFLAGS="-j12"
 ENV FORCE_CUDA=1 
 ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
 ENV NVCC_FLAGS="--use_fast_math -allow-unsupported-compiler" 
+ENV TENSORFLOW="/docker/tensorflow-*.whl"
 
 RUN <<EOF
 #python
@@ -49,53 +49,74 @@ EOF
 
 RUN <<EOF
 #xformers sources
-git clone https://github.com/facebookresearch/xformers.git /xformers
+git clone https://github.com/P2Enjoy/xformers.git /xformers
 cd /xformers
 git reset --hard ${XFORMER_SHA}
 git submodule update --init --recursive
 EOF
 
+COPY ./tensorflow/*.whl /docker/
+
 WORKDIR /xformers
 RUN <<EOF
 #xformers libs
 python -m venv venv
-source ./venv/bin/activate
+source /xformers/venv/bin/activate
 pip install --upgrade pip
 #/usr/bin/nvidia-smi
 #export TORCH_CUDA_ARCH_LIST="$(/usr/bin/nvidia-smi --query-gpu=compute_cap --format=csv | tail -1)+PTX"
 export TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
-pip install --prefer-binary --no-cache-dir ${TENSORFLOW}
-pip install --prefer-binary --no-cache-dir setuptools
-pip install --prefer-binary --no-cache-dir wheel
-pip install --prefer-binary --no-cache-dir ninja
+pip install --force-reinstall /docker/tensorflow-*.whl
+pip install setuptools
+pip install wheel
+pip install ninja
 EOF
+
+COPY ./data/xformers-*.whl /docker/
 
 RUN <<EOF
 #xformers pip
 python -m venv venv
-source ./venv/bin/activate
+source /xformers/venv/bin/activate
 pip install --upgrade pip
-pip install --prefer-binary --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu116
+EOF
+
+RUN <<EOF
+#xformers benchmarks
+if [[ "$(ls -A /docker/xformers-*.whl)" ]];
+then
+	python -m venv venv
+	source /xformers/venv/bin/activate
+	pip install -r requirements-benchmark.txt --extra-index-url https://download.pytorch.org/whl/cu116 --pre
+	pip install /docker/xformers-*.whl
+fi
 EOF
 
 RUN <<EOF
 #xformers build
-python -m venv venv
-source ./venv/bin/activate
-pip install --upgrade pip
 #-DXFORMERS_MEM_EFF_ATTENTION_DISABLE_BACKWARD
-python setup.py build
+if [[ ! "$(ls -A /docker/xformers-*.whl)" ]];
+then
+	python -m venv venv
+	source /xformers/venv/bin/activate
+	pip install --upgrade pip
+	python setup.py build
+fi;
 EOF
 
 RUN <<EOF
 #xformers dist
-python -m venv venv
-source ./venv/bin/activate
-pip install --upgrade pip
-python setup.py bdist_wheel
+if [[ ! "$(ls -A /docker/xformers-*.whl)" ]];
+then
+	source /xformers/venv/bin/activate
+	pip install --upgrade pip
+	python setup.py bdist_wheel
+fi
 EOF
 
-COPY . /docker
+COPY ./scripts/deploy.sh /docker/
+
 RUN <<EOF
 chmod +x /docker/deploy.sh
 EOF
