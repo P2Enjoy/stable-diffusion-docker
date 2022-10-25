@@ -53,7 +53,7 @@ services:
     <<: *gpu_service
     profiles: ["auto"]
     environment:
-      - CLI_ARGS=--opt-split-attention --opt-split-attention-invokeai --allow-code --medvram --xformers --gradio-img2img-tool color-sketch --deepdanbooru #--ngrok pyngrok
+      - CLI_ARGS=--allow-code --medvram --xformers --gradio-img2img-tool color-sketch --deepdanbooru --opt-split-attention #--opt-split-attention-invokeai #--ngrok pyngrok
 
   auto-cpu:
     <<: *base_service

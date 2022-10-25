@@ -3,7 +3,7 @@
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
-ARG stableDiffusion_SHA="69ae4b35e0a0f6ee1af8bb9a5d0016ccb27e36dc"	#https://github.com/P2Enjoy/stable-diffusion.git
+ARG stableDiffusion_SHA="e6bb37f3ebfc8b72f6aefcafd5eadb828b130fe2"	#https://github.com/P2Enjoy/stable-diffusion.git
 ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/P2Enjoy/CodeFormer.git
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
@@ -67,7 +67,11 @@ FROM python:3.10-slim
 ARG TENSORFLOW_VERSION="tensorflow==2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="df0a1f83815c771246a7b1bca85d63feaefad8d1"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+#last good
+#c57919ea2a8e4a23a05d21f28928e08bbf34c59e 
+#latest
+#3e15f8e0f5cc87507f77546d92435670644dbd18
+ARG AUTO1111_SHA="3e15f8e0f5cc87507f77546d92435670644dbd18"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
 ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/P2Enjoy/DeepDanbooru.git
