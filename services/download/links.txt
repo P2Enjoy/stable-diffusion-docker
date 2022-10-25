@@ -6,6 +6,14 @@ https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plu
   out=RealESRGAN/RealESRGAN_x4plus.pth
 https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth
   out=RealESRGAN/RealESRGAN_x4plus_anime_6B.pth
+https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth
+  out=RealESRGAN/realesr-general-x4v3.pth
+https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-wdn-x4v3.pth
+  out=RealESRGAN/realesr-general-wdn-x4v3.pth
+https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-animevideov3.pth
+  out=RealESRGAN/realesr-animevideov3.pth
+https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth
+  out=RealESRGAN/RealESRGAN_x2plus.pth
 https://heibox.uni-heidelberg.de/f/31a76b13ea27482981b4/?dl=1
   out=LDSR/project.yaml
 https://heibox.uni-heidelberg.de/f/578df07c8fc04ffbadf3/?dl=1

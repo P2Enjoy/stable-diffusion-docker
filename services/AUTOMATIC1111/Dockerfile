@@ -32,8 +32,8 @@ RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as custom_scripts
 
-ARG a1111_sd_webui_tagcomplete="3759ec055a0486cc345f5d989af2438607d7a447"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
-ARG deforum_for_automatic1111_webui="000deeeef69016612fe3cdec9234f97d87d30748"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
+ARG a1111_sd_webui_tagcomplete="40d53d89d16c6fd6e4e05d9ad8f9a46ac27c1352"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
+ARG deforum_for_automatic1111_webui="753893492521fa7f50c328976692be6834fcef65"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
 ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/P2Enjoy/Txt2Vectorgraphics.git
 ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/P2Enjoy/txt2mask.git
 ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/P2Enjoy/stable-diffusion-webui-cv2-external-masking-script.git
@@ -42,7 +42,7 @@ ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.co
 ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/P2Enjoy/embedding-to-png-script.git
 ARG stable_diffusion_webui_aesthetic_gradients="411889ca602f20b8bb5e4d1af2b9686eab1913b1" 		#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git
 ARG stable_diffusion_webui_images_browse="3f4ef11523b580b9e4859084c6a91dbfd4c44cb0" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
-ARG stable_diffusion_webui_inspiration="3a2a44f2d443d770191473a8452824128dc9c52b"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
+ARG stable_diffusion_webui_inspiration="395025a1f51ff1c6ad62ab909c839f381133f01d"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -67,7 +67,7 @@ FROM python:3.10-slim
 ARG TENSORFLOW_VERSION="tensorflow==2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="HEAD"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="df0a1f83815c771246a7b1bca85d63feaefad8d1"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
 ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/P2Enjoy/DeepDanbooru.git
@@ -191,7 +191,7 @@ RUN <<EOF
 # xformers
 cd ${ROOT}
 source ${ROOT}/venv/bin/activate
-pip install --force-reinstall --extra-index-url ${PIP_REPOSITORY} /docker/xformers-*.whl
+pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers-*.whl
 EOF
 
 RUN <<EOF
@@ -246,17 +246,9 @@ apt-get install tk potrace ffmpeg unzip -y #libgtk2.0-dev
 EOF
 
 RUN <<EOF
-# deforum-for-automatic1111-webui
-source ${ROOT}/venv/bin/activate
-pip install --upgrade pip
-cp -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/{deforum.py,deforum} ${ROOT}/scripts/
-pip install --extra-index-url ${PIP_REPOSITORY} -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/requirements.txt
-EOF
-
-RUN <<EOF
 # a1111-sd-webui-tagcomplete
-#cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/{javascript,tags,scripts} ${ROOT}/
-#cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/tags ${WORKDIR}/
+cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/{javascript,tags,scripts} ${ROOT}/
+cp -r ${EXTENSIONSDIR}/a1111-sd-webui-tagcomplete/tags ${WORKDIR}/
 EOF
 
 RUN <<EOF
@@ -301,15 +293,24 @@ cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-aesthetic-gradients ${ROOT}/extens
 EOF
 
 RUN <<EOF
-# aesthetic_gradients
+# image_browser
 mkdir -p ${ROOT}/extensions
-cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-images-browser ${ROOT}/extensions/images-browser
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-images-browser ${ROOT}/extensions/stable-diffusion-webui-images-browser
 EOF
 
 RUN <<EOF
 # inspiration
 mkdir -p ${ROOT}/extensions
-cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-inspiration ${ROOT}/extensions/webui-inspiration
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-inspiration ${ROOT}/extensions/stable-diffusion-webui-inspiration
+EOF
+
+RUN <<EOF
+# deforum-for-automatic1111-webui
+mkdir -p ${ROOT}/extensions
+source ${ROOT}/venv/bin/activate
+pip install --upgrade pip
+pip install --extra-index-url ${PIP_REPOSITORY} -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui/requirements.txt
+cp -r ${EXTENSIONSDIR}/deforum-for-automatic1111-webui ${ROOT}/extensions/deforum
 EOF
 
 #################################################################################################################################################
@@ -324,4 +325,4 @@ ENV CLI_ARGS=""
 WORKDIR ${WORKDIR}
 EXPOSE 7860
 # run, -u to not buffer stdout/stderr
-CMD /docker/run.sh -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion ${CLI_ARGS}
+CMD /docker/run.sh -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --disable-safe-unpickle ${CLI_ARGS}
