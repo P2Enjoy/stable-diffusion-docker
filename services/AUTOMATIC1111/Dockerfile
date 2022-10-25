@@ -39,7 +39,7 @@ EOF
 FROM alpine/git:2.36.2 as custom_scripts
 
 ARG a1111_sd_webui_tagcomplete="40d53d89d16c6fd6e4e05d9ad8f9a46ac27c1352"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
-ARG deforum_for_automatic1111_webui="753893492521fa7f50c328976692be6834fcef65"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
+ARG deforum_for_automatic1111_webui="52172c9272934ff59d4a2fcd7c59b9338f8e39e9"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
 ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/P2Enjoy/Txt2Vectorgraphics.git
 ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/P2Enjoy/txt2mask.git
 ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/P2Enjoy/stable-diffusion-webui-cv2-external-masking-script.git
@@ -47,7 +47,7 @@ ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#
 ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/P2Enjoy/txt2imghd.git
 ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/P2Enjoy/embedding-to-png-script.git
 ARG stable_diffusion_webui_aesthetic_gradients="411889ca602f20b8bb5e4d1af2b9686eab1913b1" 		#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git
-ARG stable_diffusion_webui_images_browse="3f4ef11523b580b9e4859084c6a91dbfd4c44cb0" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
+ARG stable_diffusion_webui_images_browse="fecd3f466256e24737f5960c3e39298cad00da8c" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
 ARG stable_diffusion_webui_inspiration="395025a1f51ff1c6ad62ab909c839f381133f01d"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
@@ -305,6 +305,7 @@ EOF
 RUN <<EOF
 # alternate_sampler_noise_schedules
 curl -o ${ROOT}/scripts/alternate_sampler_noise_schedules.py https://gist.githubusercontent.com/dfaker/f88aa62e3a14b559fe4e5f6b345db664/raw/791dabfa0ab26399aa2635bcbc1cf6267aa4ffc2/alternate_sampler_noise_schedules.py
+dos2unix ${ROOT}/scripts/alternate_sampler_noise_schedules.py
 EOF
 
 RUN <<EOF
