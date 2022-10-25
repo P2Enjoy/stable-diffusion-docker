@@ -31,8 +31,8 @@ RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip
 
 RUN <<EOF
 #dos2unix
-apt install dos2unix -y
-find repositories -type f -print0 | xargs -0 dos2unix --
+apk add --no-cache dos2unix
+find /git/repositories -type f -print0 | xargs -0 dos2unix --
 EOF
 
 ############################################################################################################################################################################################
@@ -68,8 +68,8 @@ RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git 
 
 RUN <<EOF
 #dos2unix
-apt install dos2unix -y
-find repositories -type f -print0 | xargs -0 dos2unix --
+apk add --no-cache dos2unix
+find /git/repositories -type f -print0 | xargs -0 dos2unix --
 EOF
 
 ############################################################################################################################################################################################
@@ -100,7 +100,7 @@ ENV WORKDIR=${REPODIR}/stable-diffusion
 ENV TF_ENABLE_ONEDNN_OPTS=1
 ENV MAX_GCC_VERSION=10
 
-RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils -y && apt-get full-upgrade -y && apt-get autopurge -y
+RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils dos2unix -y && apt-get full-upgrade -y && apt-get autopurge -y
 
 #GCC
 RUN <<EOF
@@ -112,9 +112,6 @@ git clone https://github.com/P2Enjoy/stable-diffusion-webui.git ${ROOT}
 cd ${ROOT}
 git pull --rebase
 git reset --hard ${AUTO1111_SHA}
-
-#dos2unix
-apt install dos2unix -y
 find ${ROOT} -type f -print0 | xargs -0 dos2unix --
 
 python -m venv venv
@@ -226,7 +223,7 @@ EOF
 RUN <<EOF
 #gnupg
 apt-get update
-apt install gnupg2 curl -y
+apt-get install gnupg2 curl -y
 EOF
 
 COPY ./data/libs/*.deb /docker/
