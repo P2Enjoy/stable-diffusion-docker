@@ -29,6 +29,12 @@ EOF
 RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
 
+RUN <<EOF
+#dos2unix
+apt install dos2unix -y
+find repositories -type f -print0 | xargs -0 dos2unix --
+EOF
+
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as custom_scripts
 
@@ -59,6 +65,12 @@ RUN git clone https://github.com/P2Enjoy/embedding-to-png-script.git repositorie
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git repositories/stable-diffusion-webui-aesthetic-gradients && cd repositories/stable-diffusion-webui-aesthetic-gradients && git reset --hard ${stable_diffusion_webui_aesthetic_gradients}
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git repositories/stable-diffusion-webui-images-browser && cd repositories/stable-diffusion-webui-images-browser && git reset --hard ${stable_diffusion_webui_images_browse}
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git repositories/stable-diffusion-webui-inspiration && cd repositories/stable-diffusion-webui-inspiration && git reset --hard ${stable_diffusion_webui_inspiration}
+
+RUN <<EOF
+#dos2unix
+apt install dos2unix -y
+find repositories -type f -print0 | xargs -0 dos2unix --
+EOF
 
 ############################################################################################################################################################################################
 FROM python:3.10-slim
@@ -100,6 +112,11 @@ git clone https://github.com/P2Enjoy/stable-diffusion-webui.git ${ROOT}
 cd ${ROOT}
 git pull --rebase
 git reset --hard ${AUTO1111_SHA}
+
+#dos2unix
+apt install dos2unix -y
+find ${ROOT} -type f -print0 | xargs -0 dos2unix --
+
 python -m venv venv
 source ${ROOT}/venv/bin/activate
 python -m ensurepip
