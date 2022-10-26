@@ -18,6 +18,8 @@ RUN git clone https://github.com/P2Enjoy/stable-diffusion.git repositories/stabl
 RUN git clone https://github.com/P2Enjoy/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
 RUN git clone https://github.com/P2Enjoy/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
 RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
 RUN <<EOF
 # because taming-transformers is huge
 git config --global http.postBuffer 1048576000
@@ -26,13 +28,11 @@ cd repositories/taming-transformers
 git reset --hard ${tamingTransformers_SHA}
 rm -rf data assets
 EOF
-RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
-RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
 
 RUN <<EOF
 #dos2unix
 apk add --no-cache dos2unix
-find /git/repositories -type f -print0 | xargs -0 dos2unix --
+dos2unix /git/repositories/**/*
 EOF
 
 ############################################################################################################################################################################################
@@ -69,7 +69,7 @@ RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git 
 RUN <<EOF
 #dos2unix
 apk add --no-cache dos2unix
-find /git/repositories -type f -print0 | xargs -0 dos2unix --
+dos2unix /git/repositories/**/*
 EOF
 
 ############################################################################################################################################################################################
@@ -83,7 +83,7 @@ ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 #c57919ea2a8e4a23a05d21f28928e08bbf34c59e 
 #latest
 #3e15f8e0f5cc87507f77546d92435670644dbd18
-ARG AUTO1111_SHA="3e15f8e0f5cc87507f77546d92435670644dbd18"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="737eb28faca8be2bb996ee0930ec77d1f7ebd939"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
 ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/P2Enjoy/DeepDanbooru.git
@@ -98,6 +98,7 @@ ENV EXTENSIONSDIR=${ROOT}/custom_scripts
 ENV REPODIR=${ROOT}/repositories
 ENV WORKDIR=${REPODIR}/stable-diffusion
 ENV TF_ENABLE_ONEDNN_OPTS=1
+ENV USE_MEMORY_EFFICIENT_ATTENTION=1
 ENV MAX_GCC_VERSION=10
 
 RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils dos2unix -y && apt-get full-upgrade -y && apt-get autopurge -y
@@ -112,8 +113,7 @@ git clone https://github.com/P2Enjoy/stable-diffusion-webui.git ${ROOT}
 cd ${ROOT}
 git pull --rebase
 git reset --hard ${AUTO1111_SHA}
-find ${ROOT} -type f -print0 | xargs -0 dos2unix --
-
+dos2unix ${ROOT}/**/*
 python -m venv venv
 source ${ROOT}/venv/bin/activate
 python -m ensurepip
@@ -131,18 +131,16 @@ pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} setuptools
 pip install --extra-index-url ${PIP_REPOSITORY} wheel
 pip install --extra-index-url ${PIP_REPOSITORY} ninja
-
-pip install --extra-index-url ${PIP_REPOSITORY} torch==1.12.1+cu116 torchvision==0.13.1+cu116
-
 pip install --extra-index-url ${PIP_REPOSITORY} pyngrok
 EOF
 
-COPY ./data/tensorflow-*.whl /docker/
+COPY ./data/*.whl /docker/
 RUN <<EOF
-# tensorflow
+# tensorflow, torch
 cd ${ROOT}
 source ${ROOT}/venv/bin/activate
-pip install --force-reinstall --extra-index-url ${PIP_REPOSITORY} /docker/tensorflow-*.whl
+pip install --extra-index-url ${PIP_REPOSITORY} /docker/tensorflow-*.whl /docker/torch-*.whl
+pip install --extra-index-url ${PIP_REPOSITORY} torchvision==0.13.1+cu116
 EOF
 
 RUN <<EOF
@@ -341,7 +339,7 @@ chmod +x /docker/{run,mount}.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
 EOF
 
 ENV CLI_ARGS=""
-WORKDIR ${WORKDIR}
+WORKDIR ${ROOT}
 EXPOSE 7860
 # run, -u to not buffer stdout/stderr
 CMD /docker/run.sh -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --disable-safe-unpickle ${CLI_ARGS}
