@@ -53,7 +53,16 @@ services:
     <<: *gpu_service
     profiles: ["auto"]
     environment:
-      - CLI_ARGS=--allow-code --medvram --xformers --gradio-img2img-tool color-sketch --deepdanbooru --opt-split-attention #--opt-split-attention-invokeai #--ngrok pyngrok
+      - CLI_ARGS=--allow-code --medvram --xformers --gradio-img2img-tool color-sketch --deepdanbooru --opt-split-attention --opt-split-attention-invokeai --opt-channelslast #--ngrok pyngrok
+      - RUN_ARGS='/docker/run.sh -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --disable-safe-unpickle ${CLI_ARGS}'
+      
+  auto_debug:
+    <<: *automatic
+    profiles: ["auto_debug"]
+    stdin_open: true
+    tty: true
+    environment:
+      - RUN-ARGS=/bin/bash
 
   auto-cpu:
     <<: *base_service

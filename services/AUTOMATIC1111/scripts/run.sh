@@ -7,7 +7,7 @@ set -Eeuo pipefail
 if [[ -f "/data/inspiration.zip" ]];
 then
 	echo "Preparing inspirations for the web-ui"
-	#unzip /data/inspiration.zip -d ${ROOT}/extensions/webui-inspiration/
+	unzip /data/inspiration.zip -d ${ROOT}/extensions/webui-inspiration/
 fi
 
 source ${ROOT}/venv/bin/activate

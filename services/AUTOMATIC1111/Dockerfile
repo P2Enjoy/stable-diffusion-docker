@@ -3,7 +3,7 @@
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
-ARG stableDiffusion_SHA="e6bb37f3ebfc8b72f6aefcafd5eadb828b130fe2"	#https://github.com/P2Enjoy/stable-diffusion.git
+ARG stableDiffusion_SHA="fffab7eb6fe95c448e078f4acc5b4879058f2752"	#https://github.com/P2Enjoy/stable-diffusion.git
 ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/P2Enjoy/CodeFormer.git
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
@@ -38,8 +38,8 @@ EOF
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as custom_scripts
 
-ARG a1111_sd_webui_tagcomplete="40d53d89d16c6fd6e4e05d9ad8f9a46ac27c1352"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
-ARG deforum_for_automatic1111_webui="52172c9272934ff59d4a2fcd7c59b9338f8e39e9"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
+ARG a1111_sd_webui_tagcomplete="dc77b3f17f8a796e19b54331263fa51fd29a9c25"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
+ARG deforum_for_automatic1111_webui="ccc1963fc42cd8ad79998838d59d9d41d526171d"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
 ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/P2Enjoy/Txt2Vectorgraphics.git
 ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/P2Enjoy/txt2mask.git
 ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/P2Enjoy/stable-diffusion-webui-cv2-external-masking-script.git
@@ -47,8 +47,10 @@ ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#
 ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/P2Enjoy/txt2imghd.git
 ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/P2Enjoy/embedding-to-png-script.git
 ARG stable_diffusion_webui_aesthetic_gradients="411889ca602f20b8bb5e4d1af2b9686eab1913b1" 		#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git
-ARG stable_diffusion_webui_images_browse="fecd3f466256e24737f5960c3e39298cad00da8c" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
-ARG stable_diffusion_webui_inspiration="395025a1f51ff1c6ad62ab909c839f381133f01d"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
+ARG stable_diffusion_webui_images_browse="6c8795774f71ed5955834614668fd106484db874" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
+ARG stable_diffusion_webui_inspiration="c15229ba61571ed950a0cf0826316f02ca5648be"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
+ARG stable_diffusion_webui_artists_to_study="665c7f4ff519cce6c9132c896b685fa33065ba7f"			#https://github.com/P2Enjoy/stable-diffusion-webui-artists-to-study.git
+ARG stable_diffusion_webui_aesthetic_image_scorer="5ccd3004f9a9efb5b8ca2bce91fe4fbb0c8070be"	 	#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-image-scorer.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -65,6 +67,8 @@ RUN git clone https://github.com/P2Enjoy/embedding-to-png-script.git repositorie
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git repositories/stable-diffusion-webui-aesthetic-gradients && cd repositories/stable-diffusion-webui-aesthetic-gradients && git reset --hard ${stable_diffusion_webui_aesthetic_gradients}
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git repositories/stable-diffusion-webui-images-browser && cd repositories/stable-diffusion-webui-images-browser && git reset --hard ${stable_diffusion_webui_images_browse}
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git repositories/stable-diffusion-webui-inspiration && cd repositories/stable-diffusion-webui-inspiration && git reset --hard ${stable_diffusion_webui_inspiration}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-webui-artists-to-study.git repositories/stable-diffusion-webui-artists-to-study && cd repositories/stable-diffusion-webui-artists-to-study && git reset --hard ${stable_diffusion_webui_artists_to_study}
+RUN git clone --recurse-submodules https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-image-scorer.git repositories/sstable-diffusion-webui-aesthetic-image-scorer && cd repositories/stable-diffusion-webui-aesthetic-image-scorer && git reset --hard ${stable_diffusion_webui_aesthetic_image_scorer}
 
 RUN <<EOF
 #dos2unix
@@ -86,7 +90,7 @@ ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 ARG AUTO1111_SHA="737eb28faca8be2bb996ee0930ec77d1f7ebd939"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
-ARG DeepDanbooru_SHA="d91a2963bf87c6a770d74894667e9ffa9f6de7ff"		#https://github.com/P2Enjoy/DeepDanbooru.git
+ARG DeepDanbooru_SHA="c48689a85dde0e4a852c1691a7d746abe242e283"		#https://github.com/P2Enjoy/DeepDanbooru.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -100,6 +104,7 @@ ENV WORKDIR=${REPODIR}/stable-diffusion
 ENV TF_ENABLE_ONEDNN_OPTS=1
 ENV USE_MEMORY_EFFICIENT_ATTENTION=1
 ENV MAX_GCC_VERSION=10
+ENV RUN_ARGS='ECHO Please specify the command line runner from the composer'
 
 RUN apt-get update && apt-get install fonts-dejavu-core rsync git jq moreutils dos2unix -y && apt-get full-upgrade -y && apt-get autopurge -y
 
@@ -169,7 +174,7 @@ RUN <<EOF
 # webui
 cd ${ROOT}
 source ${ROOT}/venv/bin/activate
-#pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/requirements_versions.txt
+pip install gradio==3.4.1
 pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/requirements.txt
 EOF
 
@@ -253,7 +258,7 @@ RUN <<EOF
 ldconfig
 EOF
 
-#################################################################################################################################################
+###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT###CUSTOM-SCRIPT##
 COPY --from=custom_scripts /git/repositories/ ${EXTENSIONSDIR}
 
 RUN <<EOF
@@ -303,6 +308,7 @@ curl -o ${ROOT}/scripts/alternate_sampler_noise_schedules.py https://gist.github
 dos2unix ${ROOT}/scripts/alternate_sampler_noise_schedules.py
 EOF
 
+###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS
 RUN <<EOF
 # aesthetic_gradients
 mkdir -p ${ROOT}/extensions
@@ -318,7 +324,13 @@ EOF
 RUN <<EOF
 # inspiration
 mkdir -p ${ROOT}/extensions
-cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-inspiration ${ROOT}/extensions/stable-diffusion-webui-inspiration
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-artists-to-study ${ROOT}/extensions/stable-diffusion-webui-artists-to-study
+EOF
+
+RUN <<EOF
+# inspiration
+mkdir -p ${ROOT}/extensions
+cp -r ${EXTENSIONSDIR}/stable-diffusion-webui-aesthetic-image-scorer ${ROOT}/extensions/stable-diffusion-webui-aesthetic-image-scorer
 EOF
 
 RUN <<EOF
@@ -342,4 +354,4 @@ ENV CLI_ARGS=""
 WORKDIR ${ROOT}
 EXPOSE 7860
 # run, -u to not buffer stdout/stderr
-CMD /docker/run.sh -u ${ROOT}/webui.py --listen --port 7860 --ckpt-dir ${ROOT}/models/Stable-diffusion --disable-safe-unpickle ${CLI_ARGS}
+CMD eval $RUN_ARGS
