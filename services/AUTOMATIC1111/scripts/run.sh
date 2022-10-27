@@ -4,18 +4,10 @@ set -Eeuo pipefail
 
 . /docker/mount.sh
 
-if [[ -f "/data/inspiration.zip" ]];
-then
-	echo "Preparing inspirations for the web-ui"
-	unzip /data/inspiration.zip -d ${ROOT}/extensions/webui-inspiration/
-fi
-
 source ${ROOT}/venv/bin/activate
 # check python
 python3 --version
 # check libraries
-touch /data/requirements.txt
-rm /data/requirements.txt
 pip freeze | tee /data/requirements.txt
 #check tensors
 python3 <<EOF

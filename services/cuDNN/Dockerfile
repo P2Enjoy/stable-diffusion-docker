@@ -135,13 +135,13 @@ EOF
 
 RUN <<EOF
 #compile
+apt update
+apt install bazel bazel-$(cat /data/tensorflow/.bazelversion) -y
 if [[ -s /data/tensorflow/.tf_configure.bazelrc ]] && [[ ! "$(ls -A /data/tensorflow-*.whl)" ]];
 then
-	apt update
-	apt install bazel bazel-$(cat /data/tensorflow/.bazelversion) -y
 	cd /data/tensorflow
 	#-Wno-sign-compare -march=native -DONEDNN_ARCH_OPT_FLAGS=-march=native -DONEDNN_GPU_RUNTIME=SYCL -DONEDNN_CPU_RUNTIME=SYCL -DONEDNN_ENABLE_CONCURRENT_EXEC=ON -DONEDNN_ENABLE_JIT_PROFILING=OFF -DONEDNN_ENABLE_ITT_TASKS=OFF -DONEDNN_EXPERIMENTAL=ON -DONEDNN_GPU_VENDOR=NVIDIA
-	bazel build --config=linux --config=opt --config=mkl --config=cuda --config=tensorrt //tensorflow/tools/pip_package:build_pip_package
+	bazel build --config=linux --config=opt --config=mkl --config=cuda --config=tensorrt --config=tpu --config=xla //tensorflow/tools/pip_package:build_pip_package
 fi
 EOF
 
