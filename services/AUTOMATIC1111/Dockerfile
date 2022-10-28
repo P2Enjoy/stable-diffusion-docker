@@ -3,7 +3,7 @@
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
-ARG stableDiffusion_SHA="e6bb37f3ebfc8b72f6aefcafd5eadb828b130fe2"	#https://github.com/P2Enjoy/stable-diffusion.git
+ARG stableDiffusion_SHA="a7e3c9820e064da54bdc97abe143caaf1a06b751"	#https://github.com/P2Enjoy/stable-diffusion.git
 ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/P2Enjoy/CodeFormer.git
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
@@ -47,10 +47,10 @@ ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#
 ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/P2Enjoy/txt2imghd.git
 ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/P2Enjoy/embedding-to-png-script.git
 # EXTENSIONS
-ARG deforum_for_automatic1111_webui="ccc1963fc42cd8ad79998838d59d9d41d526171d"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
+ARG deforum_for_automatic1111_webui="2eed36919087ff025765c7aed271b6dd930e6e61"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
 ARG stable_diffusion_webui_aesthetic_gradients="411889ca602f20b8bb5e4d1af2b9686eab1913b1" 		#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git
-ARG stable_diffusion_webui_images_browse="3d9c93c3291eeb266fe45f7521ec5054f9ceca91" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
-ARG stable_diffusion_webui_inspiration="c15229ba61571ed950a0cf0826316f02ca5648be"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
+ARG stable_diffusion_webui_images_browse="51fd743564c75cdae2bd57b8601ba8ed98d541c4" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
+ARG stable_diffusion_webui_inspiration="82c645007205ce6675bdcf4274f0cc2a4eeed71a"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
 ARG stable_diffusion_webui_artists_to_study="665c7f4ff519cce6c9132c896b685fa33065ba7f"			#https://github.com/P2Enjoy/stable-diffusion-webui-artists-to-study.git
 ARG stable_diffusion_webui_aesthetic_image_scorer="5ccd3004f9a9efb5b8ca2bce91fe4fbb0c8070be"	 	#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-image-scorer.git
 

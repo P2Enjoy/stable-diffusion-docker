@@ -53,6 +53,7 @@ services:
     <<: *gpu_service
     profiles: ["auto"]
     environment:
+      - USE_MEMORY_EFFICIENT_ATTENTION=0
       - CLI_ARGS=--medvram --xformers --gradio-img2img-tool color-sketch --deepdanbooru --opt-split-attention --opt-split-attention-invokeai --opt-channelslast
       - RUN_ARGS=/docker/run.sh -u /stable-diffusion-webui/webui.py --listen --port 7860 --allow-code
       
