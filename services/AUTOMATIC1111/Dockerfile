@@ -256,7 +256,15 @@ apt-get update
 apt install /docker/*.deb -y
 EOF
 
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/cuda-11.2/targets/x86_64-linux/lib/:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/local/cuda-11.0/targets/x86_64-linux/lib"
+#ENV TPU_LIBRARY_PATH="/stable-diffusion-webui/venv/lib/python3.10/site-packages/libtpu/"
+RUN <<EOF
+#jax/tpu
+source ${ROOT}/venv/bin/activate
+#pip install tpu -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
+pip install "jax[cuda11_cudnn805]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+EOF
+
+ENV LD_LIBRARY_PATH="${TPU_LIBRARY_PATH}:/usr/local/cuda/lib64:/usr/local/cuda-11.2/targets/x86_64-linux/lib/:/usr/local/cuda-11.1/targets/x86_64-linux/lib/:/usr/local/cuda-11.0/targets/x86_64-linux/lib"
 RUN <<EOF
 #fix LDCONFIG
 ldconfig
