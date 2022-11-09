@@ -4,11 +4,11 @@
 FROM alpine/git:2.36.2 as download
 
 ARG stableDiffusion_SHA="a7e3c9820e064da54bdc97abe143caaf1a06b751"	#https://github.com/P2Enjoy/stable-diffusion.git
-ARG codeFormer_SHA="fa547b7aba3ef0a2b1b8db9956e6dba2984de218"		#https://github.com/P2Enjoy/CodeFormer.git
+ARG codeFormer_SHA="8e5f81be41f283942b4346fef87ca1fad2cb889d"		#https://github.com/P2Enjoy/CodeFormer.git
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
 ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/P2Enjoy/taming-transformers.git
-ARG kDiffusion_SHA="f4e99857772fc3a126ba886aadf795a332774878"		#https://github.com/P2Enjoy/k-diffusion.git
+ARG kDiffusion_SHA="60e5042ca0da89c14d1dd59d73883280f8fce991"		#https://github.com/P2Enjoy/k-diffusion.git
 ARG clip_interrogator_SHA="2486589f24165c8e3b303f84e9dbbea318df83e8"	#https://github.com/P2Enjoy/clip-interrogator.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
@@ -39,7 +39,7 @@ EOF
 FROM alpine/git:2.36.2 as custom_scripts
 
 # CUSTOM SCRIPTS
-ARG a1111_sd_webui_tagcomplete="dc77b3f17f8a796e19b54331263fa51fd29a9c25"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
+ARG a1111_sd_webui_tagcomplete="2d45d6c796d8dc4ef04b375998a599a2a0a53273"				#https://github.com/P2Enjoy/a1111-sd-webui-tagcomplete.git
 ARG Txt2Vectorgraphics="2b780584f603b9abebba02527f3e0c3eed63426b"					#https://github.com/P2Enjoy/Txt2Vectorgraphics.git
 ARG txt2mask="9abc4c68188d1bb5b6f69f4b38cc9947be1bd206"							#https://github.com/P2Enjoy/txt2mask.git
 ARG stable_diffusion_webui_cv2_external_masking_script="558f6b0b93168a9a16771c8d5d9dde7961f6b5e2"	#https://github.com/P2Enjoy/stable-diffusion-webui-cv2-external-masking-script.git
@@ -47,12 +47,12 @@ ARG Stable_diffusion_webui_video="87b78e07088287c2fa1a777e53c5bcfdcaf79aac"				#
 ARG txt2imghd="96387631e48e64bbbaf1fcf2608a8be86bb7c730"						#https://github.com/P2Enjoy/txt2imghd.git
 ARG embedding_to_png_script="0fe7ed0c88939afaca066ccb0fea04d441bb9669"					#https://github.com/P2Enjoy/embedding-to-png-script.git
 # EXTENSIONS
-ARG deforum_for_automatic1111_webui="2eed36919087ff025765c7aed271b6dd930e6e61"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
+ARG deforum_for_automatic1111_webui="183b331f4da7f790fb77576229d361975bb0c2b1"				#https://github.com/P2Enjoy/deforum-for-automatic1111-webui.git
 ARG stable_diffusion_webui_aesthetic_gradients="411889ca602f20b8bb5e4d1af2b9686eab1913b1" 		#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-gradients.git
-ARG stable_diffusion_webui_images_browse="51fd743564c75cdae2bd57b8601ba8ed98d541c4" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
-ARG stable_diffusion_webui_inspiration="82c645007205ce6675bdcf4274f0cc2a4eeed71a"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
+ARG stable_diffusion_webui_images_browse="15528557c0434f66fd863347e2ecaff72f4f6f12" 			#https://github.com/P2Enjoy/stable-diffusion-webui-images-browser.git
+ARG stable_diffusion_webui_inspiration="25f4c1f04f0570aeec7b9914895a75bf510edf35"			#https://github.com/P2Enjoy/stable-diffusion-webui-inspiration.git
 ARG stable_diffusion_webui_artists_to_study="665c7f4ff519cce6c9132c896b685fa33065ba7f"			#https://github.com/P2Enjoy/stable-diffusion-webui-artists-to-study.git
-ARG stable_diffusion_webui_aesthetic_image_scorer="5ccd3004f9a9efb5b8ca2bce91fe4fbb0c8070be"	 	#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-image-scorer.git
+ARG stable_diffusion_webui_aesthetic_image_scorer="e6389da7a5827e700522ff1943ee4ae2c5010089"	 	#https://github.com/P2Enjoy/stable-diffusion-webui-aesthetic-image-scorer.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -91,7 +91,7 @@ ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 #c57919ea2a8e4a23a05d21f28928e08bbf34c59e 
 #latest
 #3e15f8e0f5cc87507f77546d92435670644dbd18
-ARG AUTO1111_SHA="737eb28faca8be2bb996ee0930ec77d1f7ebd939"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="ac085628540d0ec6a988fad93f5b8f2154209571"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
 ARG DeepDanbooru_SHA="c48689a85dde0e4a852c1691a7d746abe242e283"		#https://github.com/P2Enjoy/DeepDanbooru.git
@@ -156,7 +156,7 @@ RUN <<EOF
 # transformers.git
 source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} transformers==4.19.2 diffusers invisible-watermark
+pip install --extra-index-url ${PIP_REPOSITORY} transformers==4.19.2 diffusers #invisible-watermark
 EOF
 
 RUN <<EOF
@@ -178,7 +178,6 @@ RUN <<EOF
 # webui
 cd ${ROOT}
 source ${ROOT}/venv/bin/activate
-pip install gradio==3.4.1
 pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/requirements.txt
 EOF
 
@@ -365,7 +364,11 @@ COPY ./scripts /docker/
 
 RUN <<EOF
 source ${ROOT}/venv/bin/activate
-chmod +x /docker/{run,mount,debug}.sh && python3 /docker/info.py ${ROOT}/modules/ui.py
+python3 /docker/info.py ${ROOT}/modules/ui.py
+
+chmod +x /docker/{run,mount,debug}.sh
+mv  ${ROOT}/style.css ${ROOT}/user.css
+sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
 
 ENV CLI_ARGS=""

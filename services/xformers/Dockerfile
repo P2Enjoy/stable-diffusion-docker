@@ -4,7 +4,7 @@
 FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
 
 #From the compiled images of tensorflow container
-ARG XFORMER_SHA="faa88b123514562dbe8e32ec72a25937b0dd9da5" #https://github.com/facebookresearch/xformers/commits/main
+ARG XFORMER_SHA="44c560d374d4a2dfc4fc5e75a9b859d440262a1a" #https://github.com/P2Enjoy/xformers.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 

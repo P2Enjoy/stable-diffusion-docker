@@ -16,10 +16,14 @@
 /Hypernetworks
 /embeddings
 /deepbooru
+/VAE
+/Deforum
+/inspiration
 #Generated pip wheels
 /*.whl
+#Random files
 /build.log
 /inspiration.zip
 /*-requirements.txt
 /requirements.txt
-/Deforum
+/
