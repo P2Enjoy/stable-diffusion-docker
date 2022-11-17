@@ -29,6 +29,7 @@ MOUNTS["${ROOT}/models/ScuNET"]="/data/ScuNET"
 MOUNTS["${ROOT}/models/LDSR"]="/data/LDSR"
 MOUNTS["${ROOT}/models/hypernetworks"]="/data/Hypernetworks"
 MOUNTS["${ROOT}/models/deepbooru"]="/data/deepbooru"
+MOUNTS["${ROOT}/models/mmdet"]="/data/mmdet"
 MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
@@ -50,8 +51,6 @@ done
 
 INTERNAL_MOUNTS["${ROOT}/config.json"]="/data/config/auto/config.json"
 INTERNAL_MOUNTS["${ROOT}/ui-config.json"]="/data/config/auto/ui-config.json"
-INTERNAL_MOUNTS["${ROOT}/extensions/aesthetic-gradients/aesthetic_embeddings"]="/data/embeddings"
-INTERNAL_MOUNTS["${ROOT}/extensions/stable-diffusion-webui-inspiration/inspiration"]="/data/inspiration"
 
 for to_path in "${!INTERNAL_MOUNTS[@]}"; do
   set -Eeuo pipefail
