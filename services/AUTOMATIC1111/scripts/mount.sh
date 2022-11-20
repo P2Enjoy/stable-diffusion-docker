@@ -33,6 +33,8 @@ MOUNTS["${ROOT}/models/mmdet"]="/data/mmdet"
 MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
+MOUNTS["${ROOT}/textual_inversion_templates"]="/data/dataset/textual_inversion_templates"
+MOUNTS["${ROOT}/textual_inversion"]="/data/dataset/textual_inversion"
 
 # extra hacks
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="/data/.cache"

@@ -53,6 +53,7 @@ services:
     <<: *gpu_service
     profiles: ["auto"]
     environment:
+      - TORCH_COMMAND=pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
       - CLI_ARGS=--medvram --xformers --gradio-img2img-tool color-sketch --deepdanbooru --opt-split-attention --opt-split-attention-invokeai --opt-channelslast
       - RUN_ARGS=/docker/run.sh -u /stable-diffusion-webui/webui.py --listen --enable-insecure-extension-access --port 7860 --allow-code
       

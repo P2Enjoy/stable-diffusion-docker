@@ -19,6 +19,7 @@
 /VAE
 /Deforum
 /inspiration
+/dataset
 #Generated pip wheels
 /*.whl
 #Random files

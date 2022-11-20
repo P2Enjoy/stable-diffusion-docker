@@ -8,7 +8,7 @@ ARG codeFormer_SHA="8e5f81be41f283942b4346fef87ca1fad2cb889d"		#https://github.c
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
 ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/P2Enjoy/taming-transformers.git
-ARG kDiffusion_SHA="60e5042ca0da89c14d1dd59d73883280f8fce991"		#https://github.com/P2Enjoy/k-diffusion.git
+ARG kDiffusion_SHA="b325595b8a776d483f6935dfa7b45f01c27039e4"		#https://github.com/P2Enjoy/k-diffusion.git
 ARG clip_interrogator_SHA="55b1770386f8c25778702532def9429d2f8bc07c"	#https://github.com/P2Enjoy/clip-interrogator.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
