@@ -42,10 +42,9 @@ FROM python:3.10-slim
 ARG TENSORFLOW_VERSION="tensorflow==2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="98947d173e3f1667eba29c904f681047dea9de90"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="1f389a43c0c9b9ec9b952147bc96a820766ba9bd"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
-ARG DeepDanbooru_SHA="c48689a85dde0e4a852c1691a7d746abe242e283"		#https://github.com/P2Enjoy/DeepDanbooru.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -171,13 +170,6 @@ source ${ROOT}/venv/bin/activate
 pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers-*.whl
 EOF
 
-RUN <<EOF
-# DeepDanbooru
-source ${ROOT}/venv/bin/activate
-pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/DeepDanbooru.git@${DeepDanbooru_SHA}#egg=deepdanbooru[tensorflow] ${TENSORFLOW_VERSION} tensorflow-io==0.27.0
-EOF
-
 #################################################################################################################################################
 RUN <<EOF
 #gnupg
@@ -228,13 +220,13 @@ RUN <<EOF
 apt-get install tk potrace ffmpeg unzip -y #libgtk2.0-dev
 EOF
 
-RUN <<EOF
-# alternate_sampler_noise_schedules
-curl -o ${ROOT}/scripts/alternate_sampler_noise_schedules.py https://gist.githubusercontent.com/dfaker/f88aa62e3a14b559fe4e5f6b345db664/raw/791dabfa0ab26399aa2635bcbc1cf6267aa4ffc2/alternate_sampler_noise_schedules.py
-dos2unix ${ROOT}/scripts/alternate_sampler_noise_schedules.py
-EOF
-
 ###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS###EXTENSIONS
+
+RUN <<EOF
+#extensions
+#source ${ROOT}/venv/bin/activate
+pip install "torchsde"
+EOF
 
 #################################################################################################################################################
 COPY ./scripts /docker/

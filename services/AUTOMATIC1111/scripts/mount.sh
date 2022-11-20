@@ -11,8 +11,9 @@ fi
 if [ ! -s /data/config/auto/ui-config.json ]; then
   cp /docker/ui-config.json /data/config/auto/ui-config.json
 fi
-# copy scripts, we cannot just mount the directory because it will override the already provided scripts in the repo
+# copy, we cannot just mount the directory because it will override the already provided scripts in the repo
 cp -rfT /data/config/auto/scripts/ "${ROOT}/scripts"
+#cp -rfT /data/dataset/textual_inversion_templates/ "${ROOT}/textual_inversion_templates"
 
 MOUNTS["/root/.cache"]="/data/.cache"
 
