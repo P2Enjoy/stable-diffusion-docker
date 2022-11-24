@@ -67,13 +67,17 @@ print('trt.trt_utils._pywrap_py_utils.get_loaded_tensorrt_version()')
 print(trt.trt_utils._pywrap_py_utils.get_loaded_tensorrt_version())
 EOF
 else
-	echo "Tensorflow have not been compiled and require configuration"
+	echo "Tensorflow have NOT been compiled YET because they require configuration"
 	echo "
 Log into the running container to configure the tensorflow: 
 	\$ docker-compose exec webui-tensorflow-docker-1 bash
 	\$ cd /deploy/tensorflow
 	\$ ./configure"
-	echo "ONCE CONFIGURED, RUN THE CONTAINER AGAIN TO COMPILE (EXIT BY CTRL+C ONCE)"
+	while [[ -z $(grep '[^[:space:]]' /data/tensorflow/.tf_configure.bazelrc) ]];
+	do
+	        sleep 5;
+	done
+	echo "CONFIGURED! PLEASE RUN THE CONTAINER AGAIN TO COMPILE"
 fi;
 
 $@

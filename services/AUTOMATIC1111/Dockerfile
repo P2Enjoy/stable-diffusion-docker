@@ -8,8 +8,8 @@ ARG codeFormer_SHA="8e5f81be41f283942b4346fef87ca1fad2cb889d"		#https://github.c
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
 ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/P2Enjoy/taming-transformers.git
-ARG kDiffusion_SHA="b325595b8a776d483f6935dfa7b45f01c27039e4"		#https://github.com/P2Enjoy/k-diffusion.git
-ARG clip_interrogator_SHA="55b1770386f8c25778702532def9429d2f8bc07c"	#https://github.com/P2Enjoy/clip-interrogator.git
+ARG kDiffusion_SHA="5b3af030dd83e0297272d861c19477735d0317ec"		#https://github.com/P2Enjoy/k-diffusion.git
+ARG clip_interrogator_SHA="55c922a48a7d352847fdd9840b8a791271dd0569"	#https://github.com/P2Enjoy/clip-interrogator.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -17,7 +17,7 @@ WORKDIR /git
 RUN git clone https://github.com/P2Enjoy/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
 RUN git clone https://github.com/P2Enjoy/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
-RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
+#RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
 RUN <<EOF
@@ -39,7 +39,6 @@ EOF
 FROM python:3.10-slim
 
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
-ARG TENSORFLOW_VERSION="tensorflow==2.10"
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
 ARG AUTO1111_SHA="1f389a43c0c9b9ec9b952147bc96a820766ba9bd"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
@@ -75,8 +74,8 @@ cd ${ROOT}
 git pull --rebase
 git reset --hard ${AUTO1111_SHA}
 dos2unix ${ROOT}/**/*
-python -m venv venv
-source ${ROOT}/venv/bin/activate
+#python -m venv venv
+#source ${ROOT}/venv/bin/activate
 python -m ensurepip
 EOF
 
@@ -86,7 +85,7 @@ RUN mkdir ${ROOT}/interrogate && cp ${ROOT}/repositories/clip-interrogator/clip_
 
 RUN <<EOF
 # Build requirements
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 
 pip install --extra-index-url ${PIP_REPOSITORY} setuptools
@@ -97,30 +96,29 @@ EOF
 
 COPY ./data/*.whl /docker/
 RUN <<EOF
-# tensorflow, torch
+# tensorflow, torch, torchvision
 cd ${ROOT}
-source ${ROOT}/venv/bin/activate
-pip install --extra-index-url ${PIP_REPOSITORY} /docker/tensorflow-*.whl /docker/torch-*.whl
-pip install --extra-index-url ${PIP_REPOSITORY} torchvision==0.13.1+cu116
+#source ${ROOT}/venv/bin/activate
+pip install --extra-index-url ${PIP_REPOSITORY} /docker/tensorflow-*.whl /docker/torch-*.whl /docker/torchvision-*.whl
 EOF
 
 RUN <<EOF
 # transformers.git
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} transformers==4.19.2 diffusers #invisible-watermark
+pip install --extra-index-url ${PIP_REPOSITORY} transformers==4.21.0 diffusers #invisible-watermark
 EOF
 
 RUN <<EOF
 # k-diffusion
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/k-diffusion/requirements.txt
 EOF
 
 RUN <<EOF
 # Codeformer
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/repositories/CodeFormer/requirements.txt
 EOF
@@ -129,35 +127,35 @@ EOF
 RUN <<EOF
 # webui
 cd ${ROOT}
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --extra-index-url ${PIP_REPOSITORY} -r ${ROOT}/requirements.txt
 EOF
 
 RUN <<EOF
 # opencv
 cd ${ROOT}
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --extra-index-url ${PIP_REPOSITORY} opencv-python-headless
 EOF
 
 RUN <<EOF
 # numpy
 cd ${ROOT}
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --extra-index-url ${PIP_REPOSITORY} -U numpy
 EOF
 
 #################################################################################################################################################
 RUN <<EOF
 # GFPGAN
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/GFPGAN.git@${GFPGAN_SHA}
 EOF
 
 RUN <<EOF
 # CLIP
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/CLIP.git@${CLIP_SHA}
 EOF
@@ -166,8 +164,9 @@ COPY ./data/xformers-*.whl /docker/
 RUN <<EOF
 # xformers
 cd ${ROOT}
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers-*.whl
+#pip install --extra-index-url ${PIP_REPOSITORY} cutlass
 EOF
 
 #################################################################################################################################################
@@ -203,7 +202,7 @@ EOF
 #ENV TPU_LIBRARY_PATH="/stable-diffusion-webui/venv/lib/python3.10/site-packages/libtpu/"
 RUN <<EOF
 #jax/tpu
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 #pip install tpu -f https://storage.googleapis.com/jax-releases/libtpu_releases.html
 pip install "jax[cuda11_cudnn805]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 EOF
@@ -226,13 +225,15 @@ RUN <<EOF
 #extensions
 #source ${ROOT}/venv/bin/activate
 pip install "torchsde"
+pip install "spacy"
+python3 -m spacy download en_core_web_sm
 EOF
 
 #################################################################################################################################################
 COPY ./scripts /docker/
 
 RUN <<EOF
-source ${ROOT}/venv/bin/activate
+#source ${ROOT}/venv/bin/activate
 python3 /docker/info.py ${ROOT}/modules/ui.py
 
 chmod +x /docker/{run,mount,debug}.sh

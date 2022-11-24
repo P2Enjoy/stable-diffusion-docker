@@ -21,7 +21,7 @@ ENV CUDA_NVRTC_VERSION=11.1.105-1
 ENV COMPUTE=7.5
 ENV MAX_GCC_VERSION=9
 
-ENV GIT_BRANCH="r2.10"
+ENV GIT_BRANCH="r2.11"
 
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV PIP_PREFER_BINARY=1 
@@ -141,7 +141,7 @@ if [[ -s /data/tensorflow/.tf_configure.bazelrc ]] && [[ ! "$(ls -A /data/tensor
 then
 	cd /data/tensorflow
 	#-Wno-sign-compare -march=native -DONEDNN_ARCH_OPT_FLAGS=-march=native -DONEDNN_GPU_RUNTIME=SYCL -DONEDNN_CPU_RUNTIME=SYCL -DONEDNN_ENABLE_CONCURRENT_EXEC=ON -DONEDNN_ENABLE_JIT_PROFILING=OFF -DONEDNN_ENABLE_ITT_TASKS=OFF -DONEDNN_EXPERIMENTAL=ON -DONEDNN_GPU_VENDOR=NVIDIA
-	bazel build --config=linux --config=opt --config=mkl --config=cuda --config=tensorrt --config=xla //tensorflow/tools/pip_package:build_pip_package
+	bazel build --local_ram_resources=8192 --config=linux --config=opt --config=mkl --config=cuda --config=tensorrt --config=xla //tensorflow/tools/pip_package:build_pip_package
 fi
 EOF
 

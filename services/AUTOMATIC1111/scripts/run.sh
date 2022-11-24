@@ -4,7 +4,6 @@ set -Eeuo pipefail
 
 . /docker/mount.sh
 
-source ${ROOT}/venv/bin/activate
 # check python
 python3 --version
 # check libraries
@@ -21,4 +20,5 @@ print('trt.trt_utils._pywrap_py_utils.get_loaded_tensorrt_version()')
 print(trt.trt_utils._pywrap_py_utils.get_loaded_tensorrt_version())
 EOF
 
+#source ${ROOT}/venv/bin/activate
 python3 $@

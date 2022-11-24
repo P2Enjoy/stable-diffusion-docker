@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-if [[ "$(ls -A /docker/xformers-*.whl)" ]];
+if [[ "$(ls -A /data/xformers-*.whl)" ]];
 then
 	echo "Testing the build"
 	source /xformers/venv/bin/activate
@@ -13,9 +13,10 @@ then
 	# check and export libraries
 	pip freeze > /deploy/xformers-requirements.txt
 	# benchmark
-	python3 /xformers/xformers/benchmarks/benchmark_encoder.py --activations relu  --plot -emb 256 -bs 32 -heads 16
+	python -m xformers.info
+	#python3 /xformers/xformers/benchmarks/benchmark_encoder.py --activations relu  --plot -emb 256 -bs 32 -heads 16
 else
-	echo "wformer WHEEL being cached in ./data folder"
-	cp /xformers/dist/*.whl /deploy/*
+	echo "xformers WHEEL being cached in ./data folder"
+	cp /xformers/dist/*.whl /deploy/
 	echo "Run container again to benchmark"
 fi;
