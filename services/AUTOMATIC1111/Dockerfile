@@ -41,7 +41,7 @@ FROM python:3.10-slim
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="1f389a43c0c9b9ec9b952147bc96a820766ba9bd"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="b7e0eaf1a7152d28a3f8f8435d2906906425267b"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
 
