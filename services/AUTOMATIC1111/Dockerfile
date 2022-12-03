@@ -3,18 +3,20 @@
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
 
-ARG stableDiffusion_SHA="a7e3c9820e064da54bdc97abe143caaf1a06b751"	#https://github.com/P2Enjoy/stable-diffusion.git
+ARG stableDiffusionV1_SHA="21f890f9da3cfbeaba8e2ac3c425ee9e998d5229"	#https://github.com/P2Enjoy/stable-diffusion.git
+ARG stableDiffusionV2_SHA="47b6b607fdd31875c9279cd2f4f16b92e4ea958e"	#https://github.com/P2Enjoy/stable-diffusion-v2.git
 ARG codeFormer_SHA="8e5f81be41f283942b4346fef87ca1fad2cb889d"		#https://github.com/P2Enjoy/CodeFormer.git
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
 ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/P2Enjoy/taming-transformers.git
 ARG kDiffusion_SHA="5b3af030dd83e0297272d861c19477735d0317ec"		#https://github.com/P2Enjoy/k-diffusion.git
-ARG clip_interrogator_SHA="55c922a48a7d352847fdd9840b8a791271dd0569"	#https://github.com/P2Enjoy/clip-interrogator.git
+ARG clip_interrogator_SHA="e22b005ba59a9a16174a09665ca42924afc0e4ae"	#https://github.com/P2Enjoy/clip-interrogator.git 55c922a48a7d352847fdd9840b8a791271dd0569
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
 WORKDIR /git
-RUN git clone https://github.com/P2Enjoy/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusionV1_SHA}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-v2.git repositories/stable-diffusion-stability-ai && cd repositories/stable-diffusion-stability-ai && git reset --hard ${stableDiffusionV2_SHA}
 RUN git clone https://github.com/P2Enjoy/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
 RUN git clone https://github.com/P2Enjoy/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
 #RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
@@ -41,9 +43,10 @@ FROM python:3.10-slim
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="b7e0eaf1a7152d28a3f8f8435d2906906425267b"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="afd660022c833942ae78d0d5d343e7ed47f09bd2"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
+ARG open_clip_SHA="bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"            #https://github.com/P2Enjoy/open_clip.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -158,6 +161,7 @@ RUN <<EOF
 #source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
 pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/CLIP.git@${CLIP_SHA}
+pip install --extra-index-url ${PIP_REPOSITORY} git+https://github.com/P2Enjoy/open_clip.git@${open_clip_SHA}
 EOF
 
 COPY ./data/xformers-*.whl /docker/
@@ -224,7 +228,6 @@ EOF
 RUN <<EOF
 #extensions
 #source ${ROOT}/venv/bin/activate
-pip install "torchsde"
 pip install "spacy"
 python3 -m spacy download en_core_web_sm
 EOF

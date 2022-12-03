@@ -4,7 +4,7 @@
 FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
 
 #From the compiled images of tensorflow container
-ARG XFORMER_SHA="103e863db94f712a96c34fc8e78cfd58a40adeee" #https://github.com/P2Enjoy/xformers.git
+ARG XFORMER_SHA="1515f775739d89628f0293aadcdc3a820d43f287" #https://github.com/P2Enjoy/xformers.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -16,7 +16,8 @@ ENV MAX_GCC_VERSION=10
 ENV MAKEFLAGS="-j10" 
 ENV FORCE_CUDA=1 
 ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
-ENV NVCC_FLAGS="-DXFORMERS_MEM_EFF_ATTENTION_DISABLE_BACKWARD --use_fast_math -allow-unsupported-compiler" 
+#-DXFORMERS_MEM_EFF_ATTENTION_DISABLE_BACKWARD --use_fast_math -allow-unsupported-compiler
+ENV NVCC_FLAGS="" 
 ENV TENSORFLOW="/data/tensorflow-*.whl"
 
 RUN <<EOF
@@ -55,7 +56,7 @@ git reset --hard ${XFORMER_SHA}
 git submodule update --init --recursive
 EOF
 
-COPY ./tensorflow/*.whl /data/
+COPY ./deps/*.whl /data/
 
 WORKDIR /xformers
 RUN <<EOF

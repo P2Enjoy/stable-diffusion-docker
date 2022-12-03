@@ -2,7 +2,7 @@
 
 set -Eeuo pipefail
 
-if [[ "$(ls -A /data/xformers-*.whl)" ]];
+if [[ "$(ls -A /deploy/xformers-*.whl)" ]];
 then
 	echo "Testing the build"
 	source /xformers/venv/bin/activate
