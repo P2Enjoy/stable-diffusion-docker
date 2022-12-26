@@ -38,13 +38,27 @@ services:
     profiles: ["xformers"]
     volumes:
       - ./services/xformers/data:/deploy
+    environment:
+      - TORCH_CUDA_ARCH_LIST=7.5+PTX
+      - NVCC_FLAGS=--use_fast_math
 
   tensorflow:
     <<: *gpu_service
     build: ./services/tensorflow/
     profiles: ["tensorflow"]
     environment:
-      - NVCC_FLAGS="--use_fast_math -allow-unsupported-compiler" 
+      - LIBNVINFER_VERSION=7.2.2
+      - LIBNVINFER_MAJOR_VERSION=7
+      - LIBNVINFER_CUDA_VERSION=11.1
+      - CUDNN_VERSION=8.1.1.33
+      - CUDNN_MAJOR_VERSION=8
+      - CUDNN_CUDA_VERSION=11.2
+      - CUDA_NVRTC=cuda-nvrtc-11-1
+      - CUDA_NVRTC_DEV=cuda-nvrtc-dev-11-1
+      - CUDA_NVRTC_VERSION=11.1.105-1
+      - COMPUTE=7.5
+      - MAX_GCC_VERSION=9
+      - GIT_BRANCH=r2.11
     volumes:
       - ./services/tensorflow/data:/deploy
 
@@ -54,7 +68,7 @@ services:
     profiles: ["auto"]
     environment:
       - TORCH_COMMAND=pip install /docker/tensorflow-*.whl /docker/torch-*.whl /docker/torchvision-*.whl --extra-index-url https://download.pytorch.org/whl/cu116
-      - CLI_ARGS=--medvram --xformers --deepdanbooru --gradio-img2img-tool color-sketch --opt-split-attention --opt-split-attention-invokeai --opt-channelslast
+      - CLI_ARGS=--medvram --xformers --deepdanbooru --gradio-img2img-tool color-sketch --gradio-inpaint-tool sketch --opt-split-attention --opt-split-attention-invokeai --opt-channelslast
       - RUN_ARGS=/docker/run.sh -u /stable-diffusion-webui/webui.py --listen --enable-insecure-extension-access --port 7860 --allow-code
       
   auto_debug:

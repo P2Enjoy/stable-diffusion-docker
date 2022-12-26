@@ -35,10 +35,18 @@ MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 MOUNTS["${ROOT}/models/Interrogator"]="/data/Interrogator"
 MOUNTS["${ROOT}/models/torch_deepdanbooru"]="/data/torch_deepdanbooru"
 MOUNTS["${ROOT}/models/midas"]="/data/midas"
+MOUNTS["${ROOT}/models/pix2pix"]="/data/pix2pix"
+MOUNTS["${ROOT}/models/leres"]="/data/leres"
+MOUNTS["${ROOT}/models/BLIP"]="/data/BLIP"
+
+# hacks
 MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
+
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
+
 MOUNTS["${ROOT}/textual_inversion_templates"]="/data/dataset/textual_inversion_templates"
 MOUNTS["${ROOT}/textual_inversion"]="/data/dataset/textual_inversion"
+MOUNTS["${ROOT}/dream_artist"]="/data/dataset/textual_inversion"
 
 # extra hacks
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="/data/.cache"

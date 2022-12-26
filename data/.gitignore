@@ -21,6 +21,12 @@
 /inspiration
 /dataset
 /Interrogator
+/midas
+/torch_deepdanbooru
+/mmdet
+/leres
+/pix2pix
+
 #Generated pip wheels
 /*.whl
 #Random files
@@ -28,4 +34,4 @@
 /inspiration.zip
 /*-requirements.txt
 /requirements.txt
-/mmdet
+

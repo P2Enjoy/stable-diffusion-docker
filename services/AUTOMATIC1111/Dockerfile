@@ -4,13 +4,14 @@
 FROM alpine/git:2.36.2 as download
 
 ARG stableDiffusionV1_SHA="21f890f9da3cfbeaba8e2ac3c425ee9e998d5229"	#https://github.com/P2Enjoy/stable-diffusion.git
-ARG stableDiffusionV2_SHA="47b6b607fdd31875c9279cd2f4f16b92e4ea958e"	#https://github.com/P2Enjoy/stable-diffusion-v2.git
-ARG codeFormer_SHA="8e5f81be41f283942b4346fef87ca1fad2cb889d"		#https://github.com/P2Enjoy/CodeFormer.git
+ARG stableDiffusionV2_SHA="d55bcd4d31d0316fcbdf552f2fd2628fdc812500"	#https://github.com/P2Enjoy/stable-diffusion-v2.git
+ARG codeFormer_SHA="2433e180aacda91bb34ad7e501a253113c447330"		#https://github.com/P2Enjoy/CodeFormer.git
 ARG BLIP_SHA="3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"			#https://github.com/P2Enjoy/BLIP.git
 ARG latentDiffusion_SHA="abf33e7002d59d9085081bce93ec798dcabd49af"	#https://github.com/P2Enjoy/latent-diffusion.git
 ARG tamingTransformers_SHA="24268930bf1dce879235a7fddd0b2355b84d7ea6"	#https://github.com/P2Enjoy/taming-transformers.git
 ARG kDiffusion_SHA="5b3af030dd83e0297272d861c19477735d0317ec"		#https://github.com/P2Enjoy/k-diffusion.git
-ARG clip_interrogator_SHA="e22b005ba59a9a16174a09665ca42924afc0e4ae"	#https://github.com/P2Enjoy/clip-interrogator.git 55c922a48a7d352847fdd9840b8a791271dd0569
+ARG clip_interrogator_SHA="180cbc4f7bcd4ca67afc505f76498a39920f9d39"	#https://github.com/P2Enjoy/clip-interrogator.git
+ARG MiDas_SHA="8ac09b4bc89731e8022e0a9360823babc8719544"                # https://github.com/P2Enjoy/MiDaS.git
 
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 
@@ -22,6 +23,10 @@ RUN git clone https://github.com/P2Enjoy/BLIP.git repositories/BLIP && cd reposi
 #RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
+RUN git clone https://github.com/P2Enjoy/MiDaS.git repositories/midas && cd repositories/midas && git reset --hard ${MiDas_SHA}
+RUN git clone https://github.com/compphoto/BoostingMonocularDepth.git repositories/BoostingMonocularDepth
+
+
 RUN <<EOF
 # because taming-transformers is huge
 git config --global http.postBuffer 1048576000
@@ -43,10 +48,10 @@ FROM python:3.10-slim
 #tensorflow-cpu tensorflow-gpu intel-tensorflow intel-tensorflow-avx512
 ARG PIP_REPOSITORY="https://download.pytorch.org/whl/cu116"
 
-ARG AUTO1111_SHA="afd660022c833942ae78d0d5d343e7ed47f09bd2"		#https://github.com/P2Enjoy/stable-diffusion-webui.git
+ARG AUTO1111_SHA="4af3ca5393151d61363c30eef4965e694eeac15e"		#https://github.com/P2Enjoy/stable-diffusion-webui.git afd660022c833942ae78d0d5d343e7ed47f09bd2
 ARG GFPGAN_SHA="2eac2033893ca7f427f4035d80fe95b92649ac56"		#https://github.com/P2Enjoy/GFPGAN.git
 ARG CLIP_SHA="d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"			#https://github.com/P2Enjoy/CLIP.git
-ARG open_clip_SHA="bb6e834e9c70d9c27d0dc3ecedeebeaeb1ffad6b"            #https://github.com/P2Enjoy/open_clip.git
+ARG open_clip_SHA="30fda531df3edc87eef0421f904604d3033a77bf"            #https://github.com/P2Enjoy/open_clip.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -109,7 +114,7 @@ RUN <<EOF
 # transformers.git
 #source ${ROOT}/venv/bin/activate
 pip install --upgrade pip
-pip install --extra-index-url ${PIP_REPOSITORY} transformers==4.21.0 diffusers #invisible-watermark
+pip install --extra-index-url ${PIP_REPOSITORY} transformers>=4.24 diffusers #invisible-watermark
 EOF
 
 RUN <<EOF
@@ -169,7 +174,7 @@ RUN <<EOF
 # xformers
 cd ${ROOT}
 #source ${ROOT}/venv/bin/activate
-pip install --extra-index-url ${PIP_REPOSITORY} /docker/xformers-*.whl
+pip install --extra-index-url ${PIP_REPOSITORY} triton /docker/xformers-*.whl
 #pip install --extra-index-url ${PIP_REPOSITORY} cutlass
 EOF
 
@@ -228,8 +233,16 @@ EOF
 RUN <<EOF
 #extensions
 #source ${ROOT}/venv/bin/activate
+
+# common
 pip install "spacy"
 python3 -m spacy download en_core_web_sm
+pip install matplotlib numba
+# ???
+pip install onnxruntime-gpu
+# sd-dynamic-prompts
+pip install Jinja2==3.1.2 requests==2.28.1 Send2Trash==1.8.0
+
 EOF
 
 #################################################################################################################################################
@@ -240,8 +253,8 @@ RUN <<EOF
 python3 /docker/info.py ${ROOT}/modules/ui.py
 
 chmod +x /docker/{run,mount,debug}.sh
-mv  ${ROOT}/style.css ${ROOT}/user.css
-sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
+mv ${ROOT}/style.css ${ROOT}/user.css
+#sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
 EOF
 
 ENV CLI_ARGS=""

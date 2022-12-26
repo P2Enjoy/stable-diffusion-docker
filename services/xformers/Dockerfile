@@ -4,7 +4,7 @@
 FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
 
 #From the compiled images of tensorflow container
-ARG XFORMER_SHA="1515f775739d89628f0293aadcdc3a820d43f287" #https://github.com/P2Enjoy/xformers.git
+ARG XFORMER_SHA="e163309908ed7a76847ce46c79b238b49fd7d341" #https://github.com/P2Enjoy/xformers.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
@@ -15,10 +15,24 @@ ENV TF_ENABLE_ONEDNN_OPTS=1
 ENV MAX_GCC_VERSION=10
 ENV MAKEFLAGS="-j10" 
 ENV FORCE_CUDA=1 
+ENV TENSORFLOW="/data/tensorflow-*.whl"
+
+#7.5+PTX
 ENV TORCH_CUDA_ARCH_LIST="7.5+PTX"
 #-DXFORMERS_MEM_EFF_ATTENTION_DISABLE_BACKWARD --use_fast_math -allow-unsupported-compiler
-ENV NVCC_FLAGS="" 
-ENV TENSORFLOW="/data/tensorflow-*.whl"
+ENV NVCC_FLAGS="--use_fast_math"
+
+RUN <<EOF
+#ENV integrity
+if [[ "$NVCC_FLAGS" == "" ]]; then
+        echo "Did you forget to specify the compiler flags?"
+        exit 127;
+fi;
+if [[ "$TORCH_CUDA_ARCH_LIST" == "" ]]; then
+        echo "Did you forget to specify the target CUDA architecture?"
+        exit 127;
+fi;
+EOF
 
 RUN <<EOF
 #python
