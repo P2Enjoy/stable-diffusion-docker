@@ -33,14 +33,18 @@ MOUNTS["${ROOT}/models/deepbooru"]="/data/deepbooru"
 MOUNTS["${ROOT}/models/mmdet"]="/data/mmdet"
 MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 MOUNTS["${ROOT}/models/Interrogator"]="/data/Interrogator"
+MOUNTS["${ROOT}/models/BLIP"]="/data/Interrogator"
 MOUNTS["${ROOT}/models/torch_deepdanbooru"]="/data/torch_deepdanbooru"
 MOUNTS["${ROOT}/models/midas"]="/data/midas"
 MOUNTS["${ROOT}/models/pix2pix"]="/data/pix2pix"
 MOUNTS["${ROOT}/models/leres"]="/data/leres"
-MOUNTS["${ROOT}/models/BLIP"]="/data/BLIP"
+MOUNTS["${ROOT}/models/LoRA"]="/data/LoRA"
+MOUNTS["${ROOT}/models/lora"]="/data/LoRA"
+MOUNTS["${ROOT}/models/dreambooth"]="/data/dreambooth"
+MOUNTS["${ROOT}/models/VAE-approx"]="/data/VAE-approx"
 
 # hacks
-MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
+#MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
 
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
 
