@@ -2,9 +2,6 @@
 
 set -Eeuo pipefail
 
-#VENV
-#source /data/venv/bin/activate
-
 # Deploy DEB libraries
 if [[ ! "$(ls -A /deploy/libs/*.deb)" ]];
 then
@@ -73,7 +70,7 @@ Log into the running container to configure the tensorflow:
 	\$ docker-compose exec webui-tensorflow-docker-1 bash
 	\$ cd /deploy/tensorflow
 	\$ ./configure"
-	while [[ -z $(grep '[^[:space:]]' /data/tensorflow/.tf_configure.bazelrc) ]];
+	while [[ -z $(grep '[^[:space:]]' /deploy/tensorflow/.tf_configure.bazelrc) ]];
 	do
 	        sleep 5;
 	done

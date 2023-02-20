@@ -21,7 +21,7 @@ ENV CUDA_NVRTC_VERSION=11.1.105-1
 ENV COMPUTE=7.5
 ENV MAX_GCC_VERSION=9
 
-ENV GIT_BRANCH="r2.11"
+ENV GIT_BRANCH="v2.11.0"
 
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV PIP_PREFER_BINARY=1 
@@ -94,8 +94,7 @@ python3 -m ensurepip
 update-alternatives --install /usr/bin/pip pip $(which pip3.10) 1
 update-alternatives --install /usr/bin/pip3 pip3 $(which pip3.10) 1
 
-pip install --upgrade pip
-pip install -r /root/requirements.txt
+pip install --upgrade -r /root/requirements.txt
 pip install -r /root/requirements_nodeps.txt --no-deps
 apt-get install libcudnn${CUDNN_MAJOR_VERSION}=${CUDNN_VERSION}-1+cuda${CUDNN_CUDA_VERSION} libcudnn${CUDNN_MAJOR_VERSION}-dev=${CUDNN_VERSION}-1+cuda${CUDNN_CUDA_VERSION} libnvinfer${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER_VERSION}-1+cuda${LIBNVINFER_CUDA_VERSION} libnvinfer-plugin${LIBNVINFER_MAJOR_VERSION}=${LIBNVINFER_VERSION}-1+cuda${LIBNVINFER_CUDA_VERSION} libnvinfer-dev=${LIBNVINFER_VERSION}-1+cuda${LIBNVINFER_CUDA_VERSION} libnvinfer-plugin-dev=${LIBNVINFER_VERSION}-1+cuda${LIBNVINFER_CUDA_VERSION} ${CUDA_NVRTC}=${CUDA_NVRTC_VERSION} ${CUDA_NVRTC_DEV}=${CUDA_NVRTC_VERSION} -y --allow-downgrades
 EOF

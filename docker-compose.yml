@@ -11,6 +11,7 @@ x-gpu-base-service: &gpu_service
 
 x-base_service: &base_service
   user: "${UID:-0}:${GID:-0}"
+  #network_mode: "host"
   ports:
     - "7860:7860"
   build:
@@ -18,25 +19,25 @@ x-base_service: &base_service
       args:
         # Compile time args
         TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl /docker/torch-*.whl /docker/torchvision-*.whl /docker/torchaudio-*.whl
-        PIP_REPOSITORY: "https://download.pytorch.org/whl/cu116"
+        PIP_REPOSITORY: "https://download.pytorch.org/whl/cu117"
         PYTORCH_CUDA_ALLOC_CONF: "garbage_collection_threshold:0.9,max_split_size_mb:256"
         MAX_GCC_VERSION: 10
         JAX: "False"
         TPU: "False"
         # History time args
-        AUTO1111_SHA: "0a8515085ef258d4b76fdc000f7ed9d55751d6b8"              #https://github.com/P2Enjoy/stable-diffusion-webui.git 
-        GFPGAN_SHA: "2eac2033893ca7f427f4035d80fe95b92649ac56"                #https://github.com/P2Enjoy/GFPGAN.git
-        CLIP_SHA: "d50d76daa670286dd6cacf3bcd80b5e4823fc8e1"                  #https://github.com/P2Enjoy/CLIP.git
-        open_clip_SHA: "9b0351a9de39debec58df3ff9b90176bd9f8b01e"             #https://github.com/P2Enjoy/open_clip.git
-        stableDiffusionV1_SHA: "21f890f9da3cfbeaba8e2ac3c425ee9e998d5229"     #https://github.com/P2Enjoy/stable-diffusion.git
-        stableDiffusionV2_SHA: "d55bcd4d31d0316fcbdf552f2fd2628fdc812500"     #https://github.com/P2Enjoy/stable-diffusion-v2.git
-        codeFormer_SHA: "2433e180aacda91bb34ad7e501a253113c447330"            #https://github.com/P2Enjoy/CodeFormer.git
-        BLIP_SHA: "3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"                  #https://github.com/P2Enjoy/BLIP.git
-        latentDiffusion_SHA: "abf33e7002d59d9085081bce93ec798dcabd49af"       #https://github.com/P2Enjoy/latent-diffusion.git
-        tamingTransformers_SHA: "24268930bf1dce879235a7fddd0b2355b84d7ea6"    #https://github.com/P2Enjoy/taming-transformers.git
-        kDiffusion_SHA: "41b4cb6df0506694a7776af31349acf082bf6091"            #https://github.com/P2Enjoy/k-diffusion.git
-        clip_interrogator_SHA: "99c8d45e86d7310d3b91b023ce7a78f70b972236"     #https://github.com/P2Enjoy/clip-interrogator.git
-        MiDas_SHA: "1645b7e1675301fdfac03640738fe5a6531e17d6"                 #https://github.com/P2Enjoy/MiDaS.git
+        AUTO1111_SHA: "0cc0ee1bcb4c24a8c9715f66cede06601bfc00c8"              # https://github.com/P2Enjoy/stable-diffusion-webui.git
+        GFPGAN_SHA: "2eac2033893ca7f427f4035d80fe95b92649ac56"                # https://github.com/P2Enjoy/GFPGAN.git
+        CLIP_SHA: "3702849800aa56e2223035bccd1c6ef91c704ca8"                  # https://github.com/P2Enjoy/CLIP.git
+        open_clip_SHA: "25fc666ff9306d425cfde1dfffa208c6929e45a7"             # https://github.com/P2Enjoy/open_clip.git
+        stableDiffusionV1_SHA: "21f890f9da3cfbeaba8e2ac3c425ee9e998d5229"     # https://github.com/P2Enjoy/stable-diffusion.git
+        stableDiffusionV2_SHA: "b7f303b31fb1d9bdaa60a2fb85a658fa48d1204d"     # https://github.com/P2Enjoy/stable-diffusion-v2.git
+        codeFormer_SHA: "50489a6736ef6ac75f00582a646782049898fe43"            # https://github.com/P2Enjoy/CodeFormer.git
+        BLIP_SHA: "3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"                  # https://github.com/P2Enjoy/BLIP.git
+        latentDiffusion_SHA: "abf33e7002d59d9085081bce93ec798dcabd49af"       # https://github.com/P2Enjoy/latent-diffusion.git
+        tamingTransformers_SHA: "24268930bf1dce879235a7fddd0b2355b84d7ea6"    # https://github.com/P2Enjoy/taming-transformers.git
+        kDiffusion_SHA: "b43db16749d51055f813255eea2fdf1def801919"            # https://github.com/P2Enjoy/k-diffusion.git
+        clip_interrogator_SHA: "6a62ce73e8259e5d8af434e0cf7223a5fe42c3ca"     # https://github.com/P2Enjoy/clip-interrogator.git
+        MiDas_SHA: "1645b7e1675301fdfac03640738fe5a6531e17d6"                 # https://github.com/P2Enjoy/MiDaS.git
   volumes:
     - &v1 ./data:/data
     - &v2 ./output:/output
@@ -82,7 +83,7 @@ services:
       - CUDA_NVRTC_VERSION=11.1.105-1
       - COMPUTE=7.5
       - MAX_GCC_VERSION=9
-      - GIT_BRANCH=r2.11
+      - GIT_BRANCH=v2.11.0
     volumes:
       - ./services/tensorflow/data:/deploy
 
@@ -96,7 +97,7 @@ services:
       - DREAMBOOTH_SKIP_INSTALL=True
       - TF_ENABLE_ONEDNN_OPTS=1
       - USE_MEMORY_EFFICIENT_ATTENTION=0
-      - CLI_ARGS=--medvram --xformers --opt-split-attention --opt-sub-quad-attention
+      - CLI_ARGS=--xformers --opt-split-attention --opt-sub-quad-attention
       - RUN_ARGS=/stable-diffusion-webui/webui.py --listen --enable-insecure-extension-access --port 7860 --allow-code --api
       - RUNNER=/docker/run.sh
       
@@ -112,4 +113,4 @@ services:
     <<: *base_service
     profiles: ["auto-cpu"]
     environment:
-      - CLI_ARGS=--no-half --precision full --gradio-img2img-tool color-sketch
+      - CLI_ARGS=--no-half --precision full

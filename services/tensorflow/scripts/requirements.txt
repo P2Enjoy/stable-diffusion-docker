@@ -8,6 +8,8 @@ neural-compressor
 onednn-cpu-dpcpp-gpu-dpcpp
 pip
 numpy
+setuptools
+ninja
 wheel
 packaging
 requests

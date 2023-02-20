@@ -40,6 +40,7 @@ MOUNTS["${ROOT}/models/pix2pix"]="/data/pix2pix"
 MOUNTS["${ROOT}/models/leres"]="/data/leres"
 MOUNTS["${ROOT}/models/LoRA"]="/data/LoRA"
 MOUNTS["${ROOT}/models/lora"]="/data/LoRA"
+MOUNTS["${ROOT}/models/Lora"]="/data/LoRA"
 MOUNTS["${ROOT}/models/dreambooth"]="/data/dreambooth"
 MOUNTS["${ROOT}/models/VAE-approx"]="/data/VAE-approx"
 

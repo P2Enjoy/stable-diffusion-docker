@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
       
 ############################################################################################################################################################################################
-FROM nvidia/cuda:11.6.2-devel-ubuntu20.04 as CUDA
+FROM nvidia/cuda:11.7.1-devel-ubuntu20.04 as CUDA
 
 #From the compiled images of tensorflow container
-ARG XFORMER_SHA="6f3c20f223c0f051e4b2dc744cc7591591ee04c4" #https://github.com/P2Enjoy/xformers.git
+ARG XFORMER_SHA="12c076d8ae9f5e3808842b528530cbbf7e3645ae" #https://github.com/P2Enjoy/xformers.git
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
