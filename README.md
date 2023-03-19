@@ -7,7 +7,7 @@ This docker will contains all the runtimes in the docker while keeping ALL the d
 
 ### AUTOMATIC1111
 
-[AUTOMATIC1111's fork](https://github.com/AUTOMATIC1111/stable-diffusion-webui) is imho the most feature rich yet elegant UI:
+[AUTOMATIC1111's fork](https://github.com/P2Enjoy/stable-diffusion-webui) is imho the most feature rich yet elegant UI:
 
 ## Setup & Usage
 
