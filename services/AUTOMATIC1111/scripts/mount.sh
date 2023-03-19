@@ -43,6 +43,12 @@ MOUNTS["${ROOT}/models/lora"]="/data/LoRA"
 MOUNTS["${ROOT}/models/Lora"]="/data/LoRA"
 MOUNTS["${ROOT}/models/dreambooth"]="/data/dreambooth"
 MOUNTS["${ROOT}/models/VAE-approx"]="/data/VAE-approx"
+MOUNTS["${ROOT}/models/3dphoto"]="/data/3dphoto"
+MOUNTS["${ROOT}/models/Autoprune"]="/data/Autoprune"
+MOUNTS["${ROOT}/models/Components"]="/data/Components"
+MOUNTS["${ROOT}/models/rem_bg"]="/data/rem_bg"
+MOUNTS["${ROOT}/models/ControlNet"]="/data/ControlNet"
+
 
 # hacks
 #MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"

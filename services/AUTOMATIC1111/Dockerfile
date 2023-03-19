@@ -54,7 +54,19 @@ ARG GFPGAN_SHA
 ARG CLIP_SHA
 ARG open_clip_SHA
 ARG PIP_REPOSITORY
+ARG TORCH_CUDA_ARCH_LIST
+ARG DS_BUILD_OPS
+ARG TRITON_VERSION
+ARG DEEPSPEED_VERSION
+ARG DEEPSPEED
+ARG NVCC_FLAGS
 
+ENV NVCC_FLAGS=${NVCC_FLAGS}
+ENV TRITON_VERSION=${TRITON_VERSION}
+ENV DEEPSPEED_VERSION=${DEEPSPEED_VERSION}
+ENV DEEPSPEED=${DEEPSPEED}
+ENV TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
+ENV DS_BUILD_OPS=${DS_BUILD_OPS}
 ENV PIP_REPOSITORY=${PIP_REPOSITORY}
 ENV TORCH_COMMAND=${TORCH_COMMAND}
 ENV JAX=${JAX}
@@ -86,7 +98,7 @@ EOF
 
 RUN <<EOF
 # apt for extensions/custom scripts
-apt-get install tk potrace ffmpeg unzip gnupg2 curl -y
+apt-get install tk potrace ffmpeg unzip gnupg2 curl libgl1-mesa-dev libegl1-mesa-dev libsm6 libxext6 libxrender-dev mesa-utils-extra libegl1-mesa-dev libgles2-mesa-dev libegl1-mesa libglfw3-dev libfontconfig1-dev wget xvfb -y
 EOF
 
 COPY ./data/libs/*.deb /docker/
@@ -144,8 +156,20 @@ EOF
 RUN <<EOF
 # xformers
 cd ${ROOT}
-/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed triton /docker/xformers-*.whl
-#/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed cutlass
+/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed  /docker/xformers-*.whl
+EOF
+
+RUN <<EOF
+# cutlass
+cd ${ROOT}
+/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed cutlass
+EOF
+
+RUN <<EOF
+# deepspeed
+cd ${ROOT}
+pip install triton==${TRITON_VERSION}
+[[ ! -z "${DEEPSPEED}" ]] && [ "${DEEPSPEED}"="True" ] && NVCC_FLAGS=${NVCC_FLAGS} TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST} DS_BUILD_OPS=${DS_BUILD_OPS} DS_BUILD_SPARSE_ATTN=0 pip install deepspeed==${DEEPSPEED_VERSION}
 EOF
 
 RUN <<EOF
@@ -215,8 +239,8 @@ COPY ./scripts /docker/
 RUN <<EOF
 python3 /docker/info.py ${ROOT}/modules/ui.py
 chmod +x /docker/{run,mount,debug}.sh
-#mv ${ROOT}/style.css ${ROOT}/user.css
-#sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
+sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
+sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
 EOF
 
 WORKDIR ${ROOT}

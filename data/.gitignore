@@ -27,6 +27,11 @@
 /leres
 /pix2pix
 /LoRA
+/3dphoto
+/ControlNet
+/Autoprune
+/Components
+/rem_bg
 
 #Generated pip wheels
 /*.whl
