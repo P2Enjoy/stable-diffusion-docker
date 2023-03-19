@@ -1,8 +1,7 @@
 # Stable Diffusion WebUI Docker
 
-Run Stable Diffusion on your machine with a nice UI without any hassle!
-
-This repository provides multiple UIs for you to play around with stable diffusion:
+Run Stable Diffusion on your machine nice and optimised!  
+This docker will contains all the runtimes in the docker while keeping ALL the downloaded file on your filesystem, so you can turn the WebUI fully OFFLINE.  
 
 ## Features
 
@@ -10,23 +9,7 @@ This repository provides multiple UIs for you to play around with stable diffusi
 
 [AUTOMATIC1111's fork](https://github.com/AUTOMATIC1111/stable-diffusion-webui) is imho the most feature rich yet elegant UI:
 
-- Text to image, with many samplers and even negative prompts!
-- Image to image, with masking, cropping, in-painting, out-painting, variations.
-- GFPGAN, RealESRGAN, LDSR, CodeFormer.
-- Loopback, prompt weighting, prompt matrix, X/Y plot
-- Live preview of the generated images.
-- Highly optimized 4GB GPU support, or even CPU only!
-- Textual inversion allows you to use pretrained textual inversion embeddings
-- [Full feature list here](https://github.com/AUTOMATIC1111/stable-diffusion-webui-feature-showcase)
-
-| Text to image                                                                                              | Image to image                                                                                             | Extras                                                                                                     |
-| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| ![](https://user-images.githubusercontent.com/24505302/189541954-46afd772-d0c8-4005-874c-e2eca40c02f2.jpg) | ![](https://user-images.githubusercontent.com/24505302/189541956-5b528de7-1b5d-479f-a1db-d3f5a53afc59.jpg) | ![](https://user-images.githubusercontent.com/24505302/189541957-cf78b352-a071-486d-8889-f26952779a61.jpg) |
-
-
 ## Setup & Usage
-
-Visit the wiki for [Setup](https://github.com/AbdBarho/stable-diffusion-webui-docker/wiki/Setup) and [Usage](https://github.com/AbdBarho/stable-diffusion-webui-docker/wiki/Usage) instructions, checkout the [FAQ](https://github.com/AbdBarho/stable-diffusion-webui-docker/wiki/FAQ) page if you face any problems, or create a new issue!
 
 ## Contributing
 
@@ -37,13 +20,3 @@ Contributions are welcome! create an issue first of what you want to contribute 
 The authors of this project are not responsible for any content generated using this interface.
 
 This license of this software forbids you from sharing any content that violates any laws, produce any harm to a person, disseminate any personal information that would be meant for harm, spread misinformation and target vulnerable groups. For the full list of restrictions please read [the license](./LICENSE).
-
-## Thanks
-
-Special thanks to everyone behind these awesome projects, without them, none of this would have been possible:
-
-- [AUTOMATIC1111/stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
-- [CompVis/stable-diffusion](https://github.com/CompVis/stable-diffusion)
-- [hlky/sd-enable-textual-inversion](https://github.com/hlky/sd-enable-textual-inversion)
-- [devilismyfriend/latent-diffusion](https://github.com/devilismyfriend/latent-diffusion)
-- [Hafiidz/latent-diffusion](https://github.com/Hafiidz/latent-diffusion)
