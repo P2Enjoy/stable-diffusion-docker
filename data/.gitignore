@@ -32,7 +32,7 @@
 /Autoprune
 /Components
 /rem_bg
-
+/ModelScope
 #Generated pip wheels
 /*.whl
 #Random files
