@@ -2,6 +2,10 @@
 
 set -Eeuo pipefail
 
+# activating the virtual environment
+source /venv/bin/activate;
+
+# Finalising the docker environment
 . /docker/mount.sh
 
 # check python

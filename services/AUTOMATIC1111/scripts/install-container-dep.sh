@@ -6,5 +6,5 @@ then
   pip install --upgrade virtualenv
   virtualenv -p python3 /venv
 fi
-source /venv/activate;
-pip install --extra-index-url ${PIP_REPOSITORY} $@
+source /venv/bin/activate;
+pip install --extra-index-url ${PIP_REPOSITORY} $@ | tee >(ts "%d-%m-%y-%H-%M-%.S" > /docker/build-$(date "+%Y.%m.%d-%H.%M.%S.%N").log)

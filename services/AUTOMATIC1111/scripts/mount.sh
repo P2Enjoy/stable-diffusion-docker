@@ -16,6 +16,7 @@ cp -rfT /data/config/auto/scripts/ "${ROOT}/scripts"
 #cp -rfT /data/dataset/textual_inversion_templates/ "${ROOT}/textual_inversion_templates"
 
 MOUNTS["/root/.cache"]="/data/.cache"
+MOUNTS["/root/.insightface"]="/data/.insightface"
 
 # main
 MOUNTS["${ROOT}/models/Stable-diffusion"]="/data/StableDiffusion"
@@ -48,7 +49,9 @@ MOUNTS["${ROOT}/models/Autoprune"]="/data/Autoprune"
 MOUNTS["${ROOT}/models/Components"]="/data/Components"
 MOUNTS["${ROOT}/models/rem_bg"]="/data/rem_bg"
 MOUNTS["${ROOT}/models/ControlNet"]="/data/ControlNet"
-
+MOUNTS["${ROOT}/models/roop"]="/data/roop"
+MOUNTS["${ROOT}/models/VideoCrafter"]="/data/VideoCrafter"
+MOUNTS["${ROOT}/models/ModelScope"]="/data/ModelScope"
 
 # hacks
 #MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"

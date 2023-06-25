@@ -1,4 +1,6 @@
 # syntax=docker/dockerfile:1
+ARG pyimage
+ARG pyver
 
 ############################################################################################################################################################################################
 FROM alpine/git:2.36.2 as download
@@ -41,68 +43,30 @@ dos2unix /git/repositories/**/*
 EOF
 
 ############################################################################################################################################################################################
-FROM python:3.10-slim
+FROM $pyimage as base
 
 SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
-ARG PYTORCH_CUDA_ALLOC_CONF
-ARG MAX_GCC_VERSION
-ARG JAX
-ARG TPU
-ARG AUTO1111_SHA
-ARG GFPGAN_SHA
-ARG CLIP_SHA
-ARG open_clip_SHA
-ARG PIP_REPOSITORY
 ARG TORCH_CUDA_ARCH_LIST
-ARG DS_BUILD_OPS
-ARG TRITON_VERSION
-ARG DEEPSPEED_VERSION
 ARG CUDNN_VERSION
-ARG DEEPSPEED
 ARG NVCC_FLAGS
-ARG TORCH_COMMAND
-ARG XFORMERS_COMMAND
-ARG TENSORFLOW_COMMAND
-ARG pyver
 
-ENV pyver=${pyver}
+ARG PIP_REPOSITORY
+
 ENV NVCC_FLAGS=${NVCC_FLAGS}
-ENV TRITON_VERSION=${TRITON_VERSION}
-ENV DEEPSPEED_VERSION=${DEEPSPEED_VERSION}
-ENV CUDNN_VERSION=${CUDNN_VERSION}
-ENV DEEPSPEED=${DEEPSPEED}
 ENV TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
-ENV DS_BUILD_OPS=${DS_BUILD_OPS}
-ENV PIP_REPOSITORY=${PIP_REPOSITORY}
-ENV TORCH_COMMAND=${TORCH_COMMAND}
-ENV XFORMERS_COMMAND=${XFORMERS_COMMAND}
-ENV TENSORFLOW_COMMAND=${TENSORFLOW_COMMAND}
-ENV JAX=${JAX}
-ENV TPU=${TPU}
-ENV PYTORCH_CUDA_ALLOC_CONF=${PYTORCH_CUDA_ALLOC_CONF}
+
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_PREFER_BINARY=1
+ENV PIP_REPOSITORY=${PIP_REPOSITORY}
 ENV PIP_NO_CACHE_DIR=1
-ENV ROOT=/stable-diffusion-webui
-ENV EXTENSIONSDIR=${ROOT}/custom_scripts
-ENV REPODIR=${ROOT}/repositories
-ENV WORKDIR=${REPODIR}/stable-diffusion
-ENV TF_ENABLE_ONEDNN_OPTS=1
-ENV USE_MEMORY_EFFICIENT_ATTENTION=0
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-
-ENV RUNNER='echo Please specify the command line runner from the composer; ARGS: '
-ENV CLI_ARGS=""
-ENV RUN_ARGS=""
 
 RUN <<EOF
 # apt for general container dependencies
 apt-get update 
-apt-get install fonts-dejavu-core rsync git jq moreutils dos2unix gcc-$MAX_GCC_VERSION g++-$MAX_GCC_VERSION -y
-update-alternatives --install /usr/bin/gcc gcc $(which gcc-$MAX_GCC_VERSION) 1
-update-alternatives --install /usr/bin/g++ g++ $(which g++-$MAX_GCC_VERSION) 1
+apt-get install fonts-dejavu-core rsync git jq moreutils dos2unix gcc g++ -y
 apt-get full-upgrade -y
 apt-get autopurge -y
 EOF
@@ -112,46 +76,74 @@ RUN <<EOF
 apt-get install tk potrace ffmpeg unzip gnupg2 curl libgl1-mesa-dev libegl1-mesa-dev libsm6 libxext6 libxrender-dev mesa-utils-extra libegl1-mesa-dev libgles2-mesa-dev libegl1-mesa libglfw3-dev libfontconfig1-dev wget xvfb dpkg -y
 EOF
 
-ENV CUDA_HOME=/usr/local/cuda
-ENV CUDNN_PATH=/usr/local/lib/python${pyver}/site-packages/nvidia/cudnn
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib/python${pyver}/site-packages/tensorrt/:/usr/local/lib/python${pyver}/site-packages/nvidia/cudnn:$LD_LIBRARY_PATH
-ENV PATH=$PATH:$CUDA_HOME/bin
 RUN <<EOF
-# cuda toolkit
-wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.0-1_all.deb
-dpkg -i cuda-keyring_1.0-1_all.deb
+# cuda
+wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.1-1_all.deb
+dpkg -i cuda-keyring_1.1-1_all.deb
+export VERSION_CODENAME="$(cat /etc/*-release | fgrep VERSION_CODENAME | cut -d'=' -f2)"
+export VERSION_ID="$(cat /etc/*-release | fgrep VERSION_ID | cut -d'=' -f2)"
 echo "
-# Contrib debian source
-deb http://deb.debian.org/debian bullseye main contrib
+# Full debian sources
+deb http://deb.debian.org/debian $VERSION_CODENAME main contrib
+deb http://deb.debian.org/debian $VERSION_CODENAME main non-free
+deb http://deb.debian.org/debian $VERSION_CODENAME main non-free-firmware
+
+# Nvidia Official channel (not yet available for debian12)
+deb https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/ /
+
 " >> /etc/apt/sources.list
 apt-get update
-apt-get -y install cuda
 EOF
 
 COPY ./scripts/install-container-dep.sh /docker/
 RUN <<EOF
-# cuda toolkit + tensorflow
-/bin/bash /docker/install-container-dep.sh install nvidia-tensorrt
-ln -s /usr/local/lib/python${pyver}/site-packages/tensorrt/libnvinfer.so.8 /usr/local/lib/python${pyver}/site-packages/tensorrt/libnvinfer.so.7
-ln -s /usr/local/lib/python${pyver}/site-packages/tensorrt/libnvinfer_plugin.so.8 /usr/local/lib/python${pyver}/site-packages/tensorrt/libnvinfer_plugin.so.7
-
+# cuda cudnn + cutlass + tensorrt
 /bin/bash /docker/install-container-dep.sh nvidia-cudnn-cu11==${CUDNN_VERSION}
+/bin/bash /docker/install-container-dep.sh cutlass
+/bin/bash /docker/install-container-dep.sh install nvidia-tensorrt
 EOF
 
-
 ############################################################################################################################################################################################
+FROM base as sd
+
+SHELL ["/bin/bash", "-ceuxo", "pipefail"]
+
+ARG GFPGAN_SHA
+ARG CLIP_SHA
+ARG open_clip_SHA
+
+ARG TORCH_COMMAND
+ARG XFORMERS_COMMAND
+ARG TENSORFLOW_COMMAND
+ARG DS_BUILD_OPS
+
+ARG DEEPSPEED
+ARG DEEPSPEED_VERSION
+ARG TORCH_CUDA_ARCH_LIST
+ARG TRITON_VERSION
+ARG JAX
+ARG TPU
+ARG pyver
+
+ENV pyver=${pyver}
+
+ENV ROOT=/stable-diffusion-webui
+ENV EXTENSIONSDIR=${ROOT}/custom_scripts
+ENV REPODIR=${ROOT}/repositories
+
+ENV CUDART_PATH=/venv/lib/python${pyver}/site-packages/nvidia/cuda_runtime
+ENV CUDNN_PATH=/venv/lib/python${pyver}/site-packages/nvidia/cudnn
+ENV TENSORRT_PATH=/venv/lib/python${pyver}/site-packages/tensorrt
+ENV LD_LIBRARY_PATH=$TENSORRT_PATH:$CUDNN_PATH/lib:$CUDART_PATH/lib:$LD_LIBRARY_PATH
 
 RUN <<EOF
 git clone https://github.com/P2Enjoy/stable-diffusion-webui.git ${ROOT}
 cd ${ROOT}
 git pull --rebase
-git reset --hard ${AUTO1111_SHA}
-dos2unix ${ROOT}/**/*
 python -m ensurepip
 EOF
 
-COPY --from=download /git/ ${ROOT}
-RUN mkdir ${ROOT}/interrogate && cp ${ROOT}/repositories/clip-interrogator/clip_interrogator/data/* ${ROOT}/interrogate
+WORKDIR ${ROOT}
 
 RUN <<EOF
 # Build requirements
@@ -178,27 +170,11 @@ $XFORMERS_COMMAND
 EOF
 
 RUN <<EOF
-# cutlass
-/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed cutlass
-EOF
-
-RUN <<EOF
-# deepspeed
-/bin/bash /docker/install-container-dep.sh triton==${TRITON_VERSION}
-if [[ ! -z "${DEEPSPEED}" ]] && [[ "${DEEPSPEED}" == "True" ]]
-then
-  export NVCC_FLAGS=${NVCC_FLAGS}
-  export TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
-  export DS_BUILD_OPS=${DS_BUILD_OPS}
-  export DS_BUILD_SPARSE_ATTN=0 
-  /bin/bash /docker/install-container-dep.sh deepspeed==${DEEPSPEED_VERSION}
-fi
-EOF
-
-RUN <<EOF
 # transformers
 #/bin/bash /docker/install-container-dep.sh transformers>=4.24 diffusers #invisible-watermark
 EOF
+
+COPY --from=download /git/ ${ROOT}
 
 RUN <<EOF
 # k-diffusion
@@ -221,15 +197,25 @@ RUN <<EOF
 /bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed git+https://github.com/P2Enjoy/open_clip.git@${open_clip_SHA}
 EOF
 
-#################################################################################################################################################
+RUN <<EOF
+# cutlass
+/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed cutlass
+EOF
 
 RUN <<EOF
-# webui
-/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed -r ${ROOT}/requirements.txt
+# deepspeed
+/bin/bash /docker/install-container-dep.sh triton==${TRITON_VERSION}
+if [[ ! -z "${DEEPSPEED}" ]] && [[ "${DEEPSPEED}" == "True" ]]
+then
+  export NVCC_FLAGS=${NVCC_FLAGS}
+  export TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
+  export DS_BUILD_OPS=${DS_BUILD_OPS}
+  export DS_BUILD_SPARSE_ATTN=0 
+  /bin/bash /docker/install-container-dep.sh deepspeed==${DEEPSPEED_VERSION}
+fi
 EOF
-#################################################################################################################################################
 
-#ENV TPU_LIBRARY_PATH="/stable-diffusion-webui/venv/lib/python3.10/site-packages/libtpu/"
+ENV TPU_LIBRARY_PATH="/stable-diffusion-webui/venv/lib/python${pyver}/site-packages/libtpu/"
 RUN <<EOF
 #jax/tpu
 if [[ ! -z "${TPU}" ]] && [[ "${TPU}" == "True" ]]
@@ -243,13 +229,62 @@ fi
 EOF
 
 #################################################################################################################################################
+FROM sd as sdcuda
+
+ARG CUDA_VERSION
+
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=$PATH:$CUDA_HOME/bin
+ENV LD_LIBRARY_PATH=$CUDA_HOME/lib:$LD_LIBRARY_PATH
+
+RUN <<EOF
+# Hotfix for libnvinfer7
+ln -s $TENSORRT_PATH/libnvinfer.so.8 $TENSORRT_PATH/libnvinfer.so.7
+ln -s $TENSORRT_PATH/libnvinfer_plugin.so.8 $TENSORRT_PATH/libnvinfer_plugin.so.7
+EOF
+
+RUN <<EOF
+# cuda driver update
+apt-get update
+apt-get -y install $CUDA_VERSION
+EOF
+
+#################################################################################################################################################
+FROM sdcuda as webui
+
+ARG AUTO1111_SHA
+
+ENV PYTORCH_CUDA_ALLOC_CONF=${PYTORCH_CUDA_ALLOC_CONF}
+ENV TF_ENABLE_ONEDNN_OPTS=1
+ENV USE_MEMORY_EFFICIENT_ATTENTION=0
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+
+ENV RUNNER='echo Please specify the command line runner from the composer; ARGS: '
+ENV CLI_ARGS=""
+ENV RUN_ARGS=""
+
+RUN mkdir ${ROOT}/interrogate && cp ${ROOT}/repositories/clip-interrogator/clip_interrogator/data/* ${ROOT}/interrogate
+
+WORKDIR ${ROOT}
+
+RUN <<EOF
+# webui update
+git fetch --all
+git reset --hard ${AUTO1111_SHA}
+dos2unix ${ROOT}/**/*
+
+/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed -r ${ROOT}/requirements.txt
+EOF
+
+#################################################################################################################################################
 COPY ./scripts /docker/
 
 RUN <<EOF
 python3 /docker/info.py ${ROOT}/modules/ui.py
 chmod +x /docker/{run,mount,debug}.sh
 sed -i 's/os.rename(tmpdir, target_dir)/shutil.move(tmpdir,target_dir)/' ${ROOT}/modules/ui_extensions.py
-sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python${pyver}/site-packages/gradio/routes.py
+#sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python${pyver}/site-packages/gradio/routes.py
 EOF
 
 WORKDIR ${ROOT}

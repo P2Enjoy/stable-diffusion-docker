@@ -33,6 +33,11 @@
 /Components
 /rem_bg
 /ModelScope
+/.insightface/
+/VideoCrafter/
+/karlo/
+/openpose/
+/roop/
 #Generated pip wheels
 /*.whl
 #Random files
