@@ -5,6 +5,11 @@ set -Eeuo pipefail
 # activating the virtual environment
 source /venv/bin/activate;
 
+export NO_TCMALLOC="True"
+#export XDG_CACHE_HOME=/root/.cache
+export NVIDIA_VISIBLE_DEVICES=all
+export NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
 # Finalising the docker environment
 . /docker/mount.sh
 

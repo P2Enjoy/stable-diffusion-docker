@@ -8,6 +8,7 @@ FROM alpine/git:2.36.2 as download
 SHELL ["/bin/sh", "-ceuxo", "pipefail"]
 ARG stableDiffusionV1_SHA
 ARG stableDiffusionV2_SHA
+ARG stableDiffusionXL_SHA
 ARG codeFormer_SHA
 ARG BLIP_SHA
 ARG latentDiffusion_SHA
@@ -19,9 +20,10 @@ ARG MiDas_SHA
 WORKDIR /git
 RUN git clone https://github.com/P2Enjoy/stable-diffusion.git repositories/stable-diffusion && cd repositories/stable-diffusion && git reset --hard ${stableDiffusionV1_SHA}
 RUN git clone https://github.com/P2Enjoy/stable-diffusion-v2.git repositories/stable-diffusion-stability-ai && cd repositories/stable-diffusion-stability-ai && git reset --hard ${stableDiffusionV2_SHA}
+RUN git clone https://github.com/P2Enjoy/stable-diffusion-xl.git repositories/generative-models && cd repositories/generative-models && git reset --hard ${stableDiffusionXL_SHA}
 RUN git clone https://github.com/P2Enjoy/CodeFormer.git repositories/CodeFormer && cd repositories/CodeFormer && git reset --hard ${codeFormer_SHA}
 RUN git clone https://github.com/P2Enjoy/BLIP.git repositories/BLIP && cd repositories/BLIP && git reset --hard ${BLIP_SHA}
-#RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
+RUN git clone https://github.com/P2Enjoy/latent-diffusion.git repositories/latent-diffusion && cd repositories/latent-diffusion && git reset --hard ${latentDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/k-diffusion.git repositories/k-diffusion && cd repositories/k-diffusion && git reset --hard ${kDiffusion_SHA}
 RUN git clone https://github.com/P2Enjoy/clip-interrogator.git repositories/clip-interrogator && cd repositories/clip-interrogator && git reset --hard ${clip_interrogator_SHA}
 RUN git clone https://github.com/P2Enjoy/MiDaS.git repositories/midas && cd repositories/midas && git reset --hard ${MiDas_SHA}
@@ -49,6 +51,7 @@ SHELL ["/bin/bash", "-ceuxo", "pipefail"]
 
 ARG TORCH_CUDA_ARCH_LIST
 ARG CUDNN_VERSION
+ARG CUDA_KEYRING
 ARG NVCC_FLAGS
 
 ARG PIP_REPOSITORY
@@ -77,21 +80,21 @@ apt-get install tk potrace ffmpeg unzip gnupg2 curl libgl1-mesa-dev libegl1-mesa
 EOF
 
 RUN <<EOF
-# cuda
-wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.1-1_all.deb
-dpkg -i cuda-keyring_1.1-1_all.deb
+# apt configurations
 export VERSION_CODENAME="$(cat /etc/*-release | fgrep VERSION_CODENAME | cut -d'=' -f2)"
 export VERSION_ID="$(cat /etc/*-release | fgrep VERSION_ID | cut -d'=' -f2)"
 echo "
+
 # Full debian sources
 deb http://deb.debian.org/debian $VERSION_CODENAME main contrib
-deb http://deb.debian.org/debian $VERSION_CODENAME main non-free
-deb http://deb.debian.org/debian $VERSION_CODENAME main non-free-firmware
-
-# Nvidia Official channel (not yet available for debian12)
-deb https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/ /
-
 " >> /etc/apt/sources.list
+apt-get update
+EOF
+
+RUN <<EOF
+# cuda configurations
+wget -O cuda-keyring.deb $CUDA_KEYRING
+dpkg -i cuda-keyring.deb
 apt-get update
 EOF
 
@@ -232,6 +235,7 @@ EOF
 FROM sd as sdcuda
 
 ARG CUDA_VERSION
+ARG CUDA_DRIVERS
 
 ENV CUDA_HOME=/usr/local/cuda
 ENV PATH=$PATH:$CUDA_HOME/bin
@@ -246,6 +250,7 @@ EOF
 RUN <<EOF
 # cuda driver update
 apt-get update
+apt-get -y install $CUDA_DRIVERS
 apt-get -y install $CUDA_VERSION
 EOF
 
@@ -274,7 +279,7 @@ git fetch --all
 git reset --hard ${AUTO1111_SHA}
 dos2unix ${ROOT}/**/*
 
-/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed -r ${ROOT}/requirements.txt
+/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed -r ${ROOT}/requirements_versions.txt
 EOF
 
 #################################################################################################################################################

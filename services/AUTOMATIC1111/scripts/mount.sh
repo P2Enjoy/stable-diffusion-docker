@@ -34,7 +34,7 @@ MOUNTS["${ROOT}/models/deepbooru"]="/data/deepbooru"
 MOUNTS["${ROOT}/models/mmdet"]="/data/mmdet"
 MOUNTS["${ROOT}/models/Deforum"]="/data/Deforum"
 MOUNTS["${ROOT}/models/Interrogator"]="/data/Interrogator"
-MOUNTS["${ROOT}/models/BLIP"]="/data/Interrogator"
+MOUNTS["${ROOT}/models/BLIP"]="/data/BLIP"
 MOUNTS["${ROOT}/models/torch_deepdanbooru"]="/data/torch_deepdanbooru"
 MOUNTS["${ROOT}/models/midas"]="/data/midas"
 MOUNTS["${ROOT}/models/pix2pix"]="/data/pix2pix"
@@ -42,6 +42,7 @@ MOUNTS["${ROOT}/models/leres"]="/data/leres"
 MOUNTS["${ROOT}/models/LoRA"]="/data/LoRA"
 MOUNTS["${ROOT}/models/lora"]="/data/LoRA"
 MOUNTS["${ROOT}/models/Lora"]="/data/LoRA"
+MOUNTS["${ROOT}/models/LyCORIS"]="/data/LyCORIS"
 MOUNTS["${ROOT}/models/dreambooth"]="/data/dreambooth"
 MOUNTS["${ROOT}/models/VAE-approx"]="/data/VAE-approx"
 MOUNTS["${ROOT}/models/3dphoto"]="/data/3dphoto"
@@ -52,10 +53,14 @@ MOUNTS["${ROOT}/models/ControlNet"]="/data/ControlNet"
 MOUNTS["${ROOT}/models/roop"]="/data/roop"
 MOUNTS["${ROOT}/models/VideoCrafter"]="/data/VideoCrafter"
 MOUNTS["${ROOT}/models/ModelScope"]="/data/ModelScope"
+MOUNTS["${ROOT}/models/karlo"]="/data/karlo"
+MOUNTS["${ROOT}/models/sam"]="/data/sam"
+MOUNTS["${ROOT}/models/sadtalker"]="/data/sadtalker"
+MOUNTS["${ROOT}/models/grounding-dino"]="/data/grounding-dino"
+MOUNTS["${ROOT}/models/openpose"]="/data/openpose"
+MOUNTS["${ROOT}/models/VAE-taesd"]="/data/VAE-taesd"
 
 # hacks
-#MOUNTS["${ROOT}/extensions"]="/data/config/auto/extensions"
-
 MOUNTS["${ROOT}/embeddings"]="/data/embeddings"
 
 MOUNTS["${ROOT}/textual_inversion_templates"]="/data/dataset/textual_inversion_templates"
@@ -64,6 +69,7 @@ MOUNTS["${ROOT}/dream_artist"]="/data/dataset/textual_inversion"
 
 # extra hacks
 MOUNTS["${ROOT}/repositories/CodeFormer/weights/facelib"]="/data/.cache"
+export SADTALKER_CHECKPOINTS=/data/sadtalker/checkpoints
 
 for to_path in "${!MOUNTS[@]}"; do
   set -Eeuo pipefail
