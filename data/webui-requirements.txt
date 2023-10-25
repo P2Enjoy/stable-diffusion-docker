@@ -46,7 +46,7 @@ gast==0.4.0
 gdown==4.7.1
 gfpgan @ git+https://github.com/P2Enjoy/GFPGAN.git@2eac2033893ca7f427f4035d80fe95b92649ac56
 gitdb==4.0.10
-GitPython==3.1.32
+GitPython==3.1.37
 google-auth==2.23.2
 google-auth-oauthlib==1.0.0
 google-pasta==0.2.0
