@@ -51,7 +51,7 @@ x-base_service: &base_service
       #
       CUDNN_VERSION: "8.6.0.163"
       CUDA_VERSION: cuda-11-8
-      CUDA_DRIVERS: cuda-drivers-535
+      CUDA_DRIVERS: cuda-drivers
       CUDA_KEYRING: https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.1-1_all.deb
       #
       DS_BUILD_OPS: 1

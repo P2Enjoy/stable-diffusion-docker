@@ -77,6 +77,7 @@ EOF
 RUN <<EOF
 # apt for extensions/custom scripts
 apt-get install tk potrace ffmpeg unzip gnupg2 curl libgl1-mesa-dev libegl1-mesa-dev libsm6 libxext6 libxrender-dev mesa-utils-extra libegl1-mesa-dev libgles2-mesa-dev libegl1-mesa libglfw3-dev libfontconfig1-dev wget xvfb dpkg -y
+apt-get install procps -y
 EOF
 
 RUN <<EOF
@@ -94,7 +95,7 @@ EOF
 RUN <<EOF
 # cuda configurations
 wget -O cuda-keyring.deb $CUDA_KEYRING
-dpkg -i cuda-keyring.deb
+apt-get install -f ./cuda-keyring.deb -y
 apt-get update
 EOF
 
@@ -250,8 +251,7 @@ EOF
 RUN <<EOF
 # cuda driver update
 apt-get update
-apt-get -y install $CUDA_DRIVERS
-apt-get -y install $CUDA_VERSION
+apt-get -y install $CUDA_VERSION $CUDA_DRIVERS
 EOF
 
 #################################################################################################################################################
