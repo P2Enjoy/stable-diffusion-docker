@@ -210,7 +210,7 @@ sounddevice==0.4.6
 soupsieve==2.5
 SQLAlchemy==2.0.22
 stack-data==0.6.3
-starlette==0.26.1
+starlette==0.27.0
 svglib==1.5.1
 sympy==1.12
 tabulate==0.9.0
