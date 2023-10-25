@@ -38,8 +38,16 @@
 /karlo/
 /openpose/
 /roop/
+/BLIP/
+/VAE-taesd/
+/embeddings.Archive/
+/sadtalker/
+/sam/
+
+
 #Generated pip wheels
 /*.whl
+
 #Random files
 /build.log
 /inspiration.zip
