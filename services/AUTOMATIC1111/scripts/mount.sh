@@ -17,6 +17,7 @@ cp -rfT /data/config/auto/scripts/ "${ROOT}/scripts"
 
 MOUNTS["/root/.cache"]="/data/.cache"
 MOUNTS["/root/.insightface"]="/data/.insightface"
+MOUNTS["/root/.segmentation-refinement"]="/data/.segmentation-refinement"
 
 # main
 MOUNTS["${ROOT}/models/Stable-diffusion"]="/data/StableDiffusion"

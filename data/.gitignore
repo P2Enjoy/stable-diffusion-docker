@@ -43,7 +43,7 @@
 /embeddings.Archive/
 /sadtalker/
 /sam/
-
+/.segmentation-refinement/
 
 #Generated pip wheels
 /*.whl
@@ -53,4 +53,3 @@
 /inspiration.zip
 /*-requirements.txt
 /requirements.txt
-
