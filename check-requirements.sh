@@ -14,7 +14,7 @@ parse_requirements() {
     local file=$1
     while IFS= read -r line; do
         # Extract package and version
-        if [[ $line =~ ^([a-zA-Z0-9_-]+)==([0-9a-zA-Z.+-]+)$ ]]; then
+        if [[ $line =~ ^([a-zA-Z0-9_-]+)([=\>\<]=[0-9a-zA-Z.+-]+)$ ]]; then
             local pkg=${BASH_REMATCH[1]}
             local ver=${BASH_REMATCH[2]}
             # Add to associative array
