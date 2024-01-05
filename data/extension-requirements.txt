@@ -36,7 +36,7 @@ etils==1.6.0
 exceptiongroup==1.2.0
 executing==2.0.1
 filelock==3.13.1
-Flask==2.2.3
+Flask==2.2.5
 Flask-Cors==4.0.0
 Flask-SocketIO==5.3.6
 Flask-SQLAlchemy==3.0.3
