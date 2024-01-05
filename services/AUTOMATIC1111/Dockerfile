@@ -101,10 +101,18 @@ EOF
 
 COPY ./scripts/install-container-dep.sh /docker/
 RUN <<EOF
-# cuda cudnn + cutlass + tensorrt
+# cuda cudnn + cutlass
 /bin/bash /docker/install-container-dep.sh nvidia-cudnn-cu11==${CUDNN_VERSION}
 /bin/bash /docker/install-container-dep.sh cutlass
-/bin/bash /docker/install-container-dep.sh install nvidia-tensorrt
+EOF
+
+RUN <<EOF
+# tensorrt
+dpkg -i /data/nv-tensorrt-local-repo-ubuntu2204-8.6.1-cuda-11.8_1.0-1_amd64.deb
+cp /var/nv-tensorrt-local-repo-ubuntu2204-8.6.1-cuda-11.8/nv-tensorrt-local-0628887B-keyring.gpg /usr/share/keyrings/
+apt update
+apt-get install tensorrt -y
+/bin/bash /docker/install-container-dep.sh nvidia-tensorrt
 EOF
 
 ############################################################################################################################################################################################
@@ -251,7 +259,7 @@ EOF
 RUN <<EOF
 # cuda driver update
 apt-get update
-apt-get -y install $CUDA_VERSION $CUDA_DRIVERS
+apt-get -y install $CUDA_VERSION #$CUDA_DRIVERS
 EOF
 
 #################################################################################################################################################

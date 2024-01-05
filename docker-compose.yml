@@ -31,27 +31,28 @@ x-base_service: &base_service
       pyimage: python:3.10-slim
       #
       #XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed  /docker/xformers-*.whl
-      XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh xformers==0.0.20
+      XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh xformers==0.0.23.post1
       #
       #TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl /docker/torch-*.whl /docker/torchvision-*.whl /docker/torchaudio-*.whl
-      TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.2+cu118
+      TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh torch==2.1.2+cu118 torchvision==0.16.2+cu118 torchaudio==2.1.2+cu118
       PYTORCH_CUDA_ALLOC_CONF: "garbage_collection_threshold:0.9,max_split_size_mb:256"
       TORCH_CUDA_ARCH_LIST: 7.5+PTX
       #
       #TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl
-      TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh tensorflow==2.12.*
+      TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh tensorflow[and-cuda]==2.15.0.post1
       #
       # General configuration
       PIP_REPOSITORY: "https://download.pytorch.org/whl/cu118"
       #
-      TRITON_VERSION: "2.0.0"
+      TRITON_VERSION: "2.1.0"
       #
       DEEPSPEED: False
-      DEEPSPEED_VERSION: "0.9.2"
-      #
+      DEEPSPEED_VERSION: "0.12.6"
+      # https://www.tensorflow.org/install/pip#software_requirements
+      # https://developer.nvidia.com/tensorrt-download
       CUDNN_VERSION: "8.6.0.163"
       CUDA_VERSION: cuda-11-8
-      CUDA_DRIVERS: cuda-drivers
+      #CUDA_DRIVERS: cuda-drivers
       CUDA_KEYRING: https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.1-1_all.deb
       #
       DS_BUILD_OPS: 1
@@ -62,17 +63,17 @@ x-base_service: &base_service
       # History time args
       stableDiffusionV1_SHA: "21f890f9da3cfbeaba8e2ac3c425ee9e998d5229"     # https://github.com/P2Enjoy/stable-diffusion.git
       stableDiffusionV2_SHA: "cf1d67a6fd5ea1aa600c4df58e5b47da45f6bdbf"     # https://github.com/P2Enjoy/stable-diffusion-v2.git
-      stableDiffusionXL_SHA: "477d8b9a7730d9b2e92b326a770c0420d00308c9"     # https://github.com/P2Enjoy/stable-diffusion-xl.git
+      stableDiffusionXL_SHA: "9d759324e914de6c96dbd1468b3a4a50243c6528"     # https://github.com/P2Enjoy/stable-diffusion-xl.git
       codeFormer_SHA: "c5b4593074ba6214284d6acd5f1719b6c5d739af"            # https://github.com/P2Enjoy/CodeFormer.git
       BLIP_SHA: "3a29b7410476bf5f2ba0955827390eb6ea1f4f9d"                  # https://github.com/P2Enjoy/BLIP.git
       latentDiffusion_SHA: "abf33e7002d59d9085081bce93ec798dcabd49af"       # https://github.com/P2Enjoy/latent-diffusion.git
       tamingTransformers_SHA: "24268930bf1dce879235a7fddd0b2355b84d7ea6"    # https://github.com/P2Enjoy/taming-transformers.git
-      kDiffusion_SHA: "ab527a9a6d347f364e3d185ba6d714e22d80cb3c"            # https://github.com/P2Enjoy/k-diffusion.git
+      kDiffusion_SHA: "cc49cf6182284e577e896943f8e29c7c9d1a7f2c"            # https://github.com/P2Enjoy/k-diffusion.git
       clip_interrogator_SHA: "bc07ce62c179d3aab3053a623d96a071101d11cb"     # https://github.com/P2Enjoy/clip-interrogator.git
       MiDas_SHA: "1645b7e1675301fdfac03640738fe5a6531e17d6"                 # https://github.com/P2Enjoy/MiDaS.git
       GFPGAN_SHA: "2eac2033893ca7f427f4035d80fe95b92649ac56"                # https://github.com/P2Enjoy/GFPGAN.git
       CLIP_SHA: "a1d071733d7111c9c014f024669f959182114e33"                  # https://github.com/P2Enjoy/CLIP.git
-      open_clip_SHA: "344068a64ce16d2fdd05cfdcc179cc8781ec9def"             # https://github.com/P2Enjoy/open_clip.git
+      open_clip_SHA: "73ad04ae7fb93ede1c02dc9040a828634cb1edf1"             # https://github.com/P2Enjoy/open_clip.git
       AUTO1111_SHA: "5ef669de080814067961f28357256e8fe27544f4"              # https://github.com/P2Enjoy/stable-diffusion-webui.git
   volumes:
     - &v1 ./data:/data
