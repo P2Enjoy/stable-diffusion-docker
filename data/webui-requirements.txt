@@ -50,7 +50,7 @@ GitPython==3.1.32
 google-auth==2.23.2
 google-auth-oauthlib==1.0.0
 google-pasta==0.2.0
-gradio==3.41.2
+gradio==4.11.0
 gradio_client==0.5.0
 grpcio==1.59.0
 h11==0.12.0
