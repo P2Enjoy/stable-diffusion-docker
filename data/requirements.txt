@@ -199,7 +199,7 @@ py-cpuinfo==9.0.0
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
 pycparser==2.21
-pycryptodome==3.19.0
+pycryptodome==3.19.1
 pydantic==1.10.13
 pydub==0.25.1
 pyfunctional==1.4.3

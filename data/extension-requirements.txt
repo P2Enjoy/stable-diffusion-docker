@@ -134,7 +134,7 @@ pure-eval==0.2.2
 py-cpuinfo==9.0.0
 pyasn1==0.5.1
 pycparser==2.21
-pycryptodome==3.19.0
+pycryptodome==3.19.1
 pyfunctional==1.4.3
 Pygments==2.17.2
 PyMatting==1.1.12
