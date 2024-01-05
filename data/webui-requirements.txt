@@ -179,7 +179,7 @@ uvicorn==0.23.2
 wandb==0.15.12
 wcwidth==0.2.8
 websockets==11.0.3
-Werkzeug==3.0.0
+Werkzeug==3.0.1
 wrapt==1.14.1
 xformers==0.0.20
 yapf==0.40.2
