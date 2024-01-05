@@ -292,7 +292,7 @@ torchvision==0.16.0
 tqdm==4.65.2
 traitlets==5.14.0
 trampoline==0.1.2
-transformers==4.27.4
+transformers==4.36.0
 transforms3d==0.4.1
 transparent-background==1.2.9
 trimesh==4.0.7
